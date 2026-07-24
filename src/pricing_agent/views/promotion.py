@@ -15,6 +15,7 @@ from datetime import datetime, timezone
 import pandas as pd
 import plotly.graph_objects as go
 import streamlit as st
+from plotly.subplots import make_subplots
 
 from pricing_agent.mcp_clients import EventClient, MockTransport, VautoClient
 from pricing_agent.skills.promotion_planner import plan_event
@@ -202,22 +203,40 @@ def render_promotion_planner(workflow_context: WorkflowContext | None = None) ->
             icon="💡",
         )
 
-    figure = go.Figure()
-    for plan_type in ("MARGIN_PROTECT", "BALANCED", "CAPACITY_FIRST"):
-        outcomes = plans[plan_type]["outcomes"]
+    # Three metrics on three independent scales — a shared y-axis would crush the sub-one-car
+    # sales effect and the small gross figures against the ~100% likelihood. Small multiples let
+    # each metric compare the three plans on its own terms, with the value printed on every bar.
+    order = ("MARGIN_PROTECT", "BALANCED", "CAPACITY_FIRST")
+    x_labels = ["Profit<br>protection", "Balanced ★", "Free<br>space"]
+    bar_colors = ["#7A8CA6", "#EE5A2A", "#E8A13C"]  # recommended (Balanced) in vAuto orange
+    add_sales = [plans[p]["outcomes"]["incremental_units_sold"]["mean"] for p in order]
+    gross = [plans[p]["outcomes"]["gross_impact"]["p50"] for p in order]
+    likely = [plans[p]["outcomes"]["probability_target_achieved"] * 100.0 for p in order]
+    panels = [
+        ("Additional sales (avg units)", add_sales, [f"{v:.2f}" for v in add_sales]),
+        ("Gross impact (P50)", gross, [f"${v:,.0f}" for v in gross]),
+        ("Target likelihood", likely, [f"{v:.0f}%" for v in likely]),
+    ]
+    figure = make_subplots(rows=1, cols=3, subplot_titles=[p[0] for p in panels],
+                           horizontal_spacing=0.09)
+    for ci, (_title, values, texts) in enumerate(panels, start=1):
         figure.add_trace(
-            go.Bar(
-                name=T.plan_name(plan_type),
-                x=["Additional sales (avg)", "Gross impact (hundreds of $)", "Target likelihood (%)"],
-                y=[
-                    outcomes["incremental_units_sold"]["mean"],
-                    outcomes["gross_impact"]["p50"] / 100.0,
-                    outcomes["probability_target_achieved"] * 100.0,
-                ],
-            )
+            go.Bar(x=x_labels, y=values, marker_color=bar_colors, text=texts,
+                   textposition="outside", cliponaxis=False, showlegend=False,
+                   hovertemplate="%{text}<extra></extra>"),
+            row=1, col=ci,
         )
-    figure.update_layout(barmode="group", height=320, margin=dict(t=20, b=10))
-    st.plotly_chart(figure)
+        figure.update_yaxes(showticklabels=False, showgrid=True, gridcolor="rgba(0,0,0,0.06)",
+                            zeroline=True, zerolinecolor="rgba(0,0,0,0.28)", row=1, col=ci)
+        figure.update_xaxes(tickfont=dict(size=11), row=1, col=ci)
+    figure.update_layout(height=300, margin=dict(t=52, b=28, l=6, r=6),
+                         plot_bgcolor="white", paper_bgcolor="white",
+                         font=dict(color="#1E1A17"), uniformtext=dict(minsize=10, mode="show"))
+    for annotation in figure.layout.annotations:  # subplot titles
+        annotation.font.size = 13
+    st.plotly_chart(figure, use_container_width=True)
+    st.caption("Each metric has its own scale, so the bars compare the three approaches within "
+               "that metric. Balanced ★ is the recommended plan.")
 
     # --- alternatives ---------------------------------------------------------------------
 
