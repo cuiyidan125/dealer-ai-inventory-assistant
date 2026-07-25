@@ -64,10 +64,25 @@ ACTION_LABEL = {
     "RETAIN_PRICE": "🟢 Hold price",
 }
 
-SEVERITY_KIND = {
-    "BLOCKING": "error", "CRITICAL": "error", "HIGH": "warning",
-    "MEDIUM": "warning", "LOW": "info", "INFO": "info",
+# A small severity dot per row, so the review panel conveys priority without three full-bleed
+# alert banners — which read as an error state ("is the site broken?") rather than a checklist.
+_SEVERITY_DOT = {
+    "BLOCKING": "🔴", "CRITICAL": "🔴", "HIGH": "🟠", "MEDIUM": "🟡", "LOW": "🔵", "INFO": "🔵",
 }
+
+
+def _render_review_panel(warnings: list[dict]) -> None:
+    """One calm, bordered panel listing the things worth a look, each with a severity dot and a
+    muted remediation line — instead of a stack of coloured alert boxes."""
+    n = len(warnings)
+    with st.container(border=True):
+        st.markdown(f"**{n} thing{'s' if n != 1 else ''} to review before you acquire**")
+        for w in warnings:
+            dot = _SEVERITY_DOT.get(w["severity"], "🟠")
+            st.markdown(md(f"{dot} **{T.warning_label(w['code'])}** — {w['message']}"))
+            st.caption(md(w["remediation"]))
+        with st.expander("View technical reason codes"):
+            st.caption("Warning codes: " + ", ".join(f"`{w['code']}`" for w in warnings))
 
 
 def render_dashboard(workflow_context: WorkflowContext | None = None) -> None:
@@ -142,12 +157,8 @@ def render_dashboard(workflow_context: WorkflowContext | None = None) -> None:
               delta_color="off")
 
     shown = [w for w in result["warnings"] if w["severity"] in ("BLOCKING", "CRITICAL", "HIGH")]
-    for warning in shown:
-        kind = SEVERITY_KIND[warning["severity"]]
-        getattr(st, kind)(md(f"**{T.warning_label(warning['code'])}** — {warning['message']}  \n_{warning['remediation']}_"))
     if shown:
-        with st.expander("View technical reason codes"):
-            st.caption("Warning codes: " + ", ".join(f"`{w['code']}`" for w in shown))
+        _render_review_panel(shown)
 
     st.caption("Your lot today, and what it looks like over the next 30 and 90 days.")
     lot_tab, forecast_tab, risk_tab = st.tabs(
