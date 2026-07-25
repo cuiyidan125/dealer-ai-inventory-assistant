@@ -78,6 +78,9 @@ class AssistantResponse:
     # The full ImproveAgingResult when the aging orchestration ran (Phase 5). Kept as a
     # plain object so this module does not import the workflow types at annotation time.
     improve_aging: object | None = None
+    # A single-vehicle AI action plan when the orchestrator ran ("what should I do about this
+    # vehicle?"). A VehicleAdvice, kept as a plain object for the same reason.
+    advice: object | None = None
 
     @property
     def executed(self) -> bool:
@@ -219,10 +222,56 @@ def _top_warnings(result: dict, limit: int = 3) -> tuple[dict, ...]:
 # --- orchestration --------------------------------------------------------------------
 
 
+# Advisory phrasing about a single vehicle: the dealer wants a coordinated recommendation, not
+# just one metric. This is the enterprise-orchestrator entry point.
+_ADVISORY = re.compile(
+    r"\b(what should i do|what do i do|what'?s my (?:best )?(?:move|option|play)|"
+    r"help me (?:with|decide)|recommend(?:ed)? (?:an )?action|what actions?|advise me|"
+    r"best course of action|action plan)\b", re.IGNORECASE)
+
+
+def _maybe_advise(text: str, routed: RouteResult, *, as_of: datetime) -> AssistantResponse | None:
+    """Run the single-vehicle AI orchestrator when the text is advisory and resolves to one
+    vehicle. Returns None to fall through to the normal single-workflow routing.
+
+    The orchestrator invokes all three skills and synthesizes one prioritized action plan; it
+    computes nothing itself, and the plan ends at a human approval, never an automatic action."""
+    if not _ADVISORY.search(text):
+        return None
+    parsed = routed.parsed_vehicle
+    if parsed is None:
+        return None
+    try:
+        transport = MockTransport(as_of=as_of)
+        inventory = VautoClient(transport).get_dealer_inventory().data
+        match = resolve_vehicle(parsed, inventory)
+        if match.status is not MatchStatus.EXACT:
+            return None
+        from pricing_agent.agents.vehicle_advisor import advise_vehicle
+        advice = advise_vehicle(match.vehicle_id, transport, as_of=as_of)
+    except Exception:  # noqa: BLE001 — advisory is best-effort; fall back to normal routing
+        return None
+    return AssistantResponse(
+        state=AssistantState.ROUTED_AND_EXECUTED,
+        message=(f"Orchestrated an action plan for {advice.description} ({match.vehicle_id}) "
+                 "across three business capabilities."),
+        route=routed,
+        workflow=WorkflowContext.IMPROVE_AGING_INVENTORY,
+        skill=routed.required_skill,
+        resolved_vehicle_id=match.vehicle_id,
+        advice=advice,
+        target_url=WORKFLOW_URL[WorkflowContext.IMPROVE_AGING_INVENTORY],
+    )
+
+
 def run_assistant(text: str, *, as_of: datetime) -> AssistantResponse:
     """Route, resolve, and execute a single supported workflow for `text`."""
     routed = route(text)
     workflow = routed.selected_workflow
+
+    advised = _maybe_advise(text, routed, as_of=as_of)
+    if advised is not None:
+        return advised
 
     if workflow is None:
         return AssistantResponse(

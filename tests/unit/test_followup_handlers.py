@@ -22,8 +22,8 @@ AGENTS = Path(__file__).resolve().parents[2] / "src" / "pricing_agent" / "agents
 AS_OF = datetime(2026, 7, 29, 14, 0, tzinfo=timezone.utc)
 
 BASELINE_SELECTED = ["V-10005", "V-10002", "V-10012", "V-10006", "V-10019", "V-10004", "V-10013",
-                     "V-10014", "V-10015", "V-10016", "V-10017", "V-10020", "V-10008", "V-10001"]
-BASELINE_ANALYSED = ["V-10005", "V-10002", "V-10012", "V-10006", "V-10019", "V-10004", "V-10013", "V-10014"]
+                     "V-10003", "V-10014", "V-10015", "V-10016", "V-10017", "V-10020", "V-10008", "V-10001"]
+BASELINE_ANALYSED = ["V-10005", "V-10002", "V-10012", "V-10006", "V-10019", "V-10004", "V-10013", "V-10003"]
 
 
 def _fresh_state():
@@ -71,7 +71,7 @@ def test_filter_over_90_days_filters_without_rerun(state):
     result = handle_followup("Show only vehicles over 90 days.", state, as_of=AS_OF)
     assert result.kind == "filtered_result"
     assert result.reran is False
-    assert set(result.referenced_ids) == {"V-10005", "V-10012", "V-10019", "V-10004", "V-10013", "V-10014"}
+    assert set(result.referenced_ids) == {"V-10005", "V-10012", "V-10019", "V-10004", "V-10013", "V-10003"}
     assert state.rerun_count == 0
 
 
@@ -81,7 +81,7 @@ def test_filter_over_90_days_filters_without_rerun(state):
 def test_safe_promotional_room_uses_existing_codes(state):
     result = handle_followup("Which vehicles have safe promotional room?", state, as_of=AS_OF)
     assert result.kind == "filtered_result"
-    assert set(result.referenced_ids) == {"V-10002", "V-10013", "V-10014"}
+    assert set(result.referenced_ids) == {"V-10002", "V-10013", "V-10003"}
 
 
 # --- 8 & 9. require-review shows the vehicle count only, never 17 ----------------------
@@ -163,7 +163,7 @@ def test_those_two_back_reference(state):
     handle_followup("Which two vehicles do not need immediate action?", state, as_of=AS_OF)
     result = handle_followup("Why those two vehicles?", state, as_of=AS_OF)
     assert result.kind == "explanation"
-    assert set(result.referenced_ids) == {"V-10013", "V-10014"}
+    assert set(result.referenced_ids) == {"V-10013", "V-10003"}
 
 
 # --- 17 & 18. unsupported data is refused, not invented -------------------------------

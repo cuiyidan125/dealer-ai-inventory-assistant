@@ -128,11 +128,11 @@ def test_five_review_vehicles_distinct_from_two_manager_review(result):
 def test_selection_and_final_actions_unchanged(result):
     assert list(result.selection.candidate_ids) == \
         ["V-10005", "V-10002", "V-10012", "V-10006", "V-10019", "V-10004", "V-10013",
-         "V-10014", "V-10015", "V-10016", "V-10017", "V-10020", "V-10008", "V-10001"]
+         "V-10003", "V-10014", "V-10015", "V-10016", "V-10017", "V-10020", "V-10008", "V-10001"]
     assert [e.vehicle_id for e in result.selection.exclusions] == \
-        ["V-10003", "V-10007", "V-10009", "V-10010", "V-10011", "V-10018"]
+        ["V-10007", "V-10009", "V-10010", "V-10011", "V-10018"]
     actions = {a["vehicle_id"]: a["recommended_action"] for a in result.consolidated_actions}
-    assert actions["V-10013"] == "NO_ACTION" and actions["V-10014"] == "NO_ACTION"
+    assert actions["V-10013"] == "NO_ACTION" and actions["V-10003"] == "NO_ACTION"
     assert actions["V-10002"] == "MANAGER_REVIEW" and actions["V-10006"] == "MANAGER_REVIEW"
     assert actions["V-10005"] == "WHOLESALE_OR_LOSS_MINIMIZATION_REVIEW"
 

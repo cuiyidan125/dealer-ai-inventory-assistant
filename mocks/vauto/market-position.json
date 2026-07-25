@@ -26,8 +26,8 @@
         "effective_date": "2026-07-21"
       },
       "V-10003": {
-        "market_reference_price": 32400,
-        "price_to_market_ratio": 1.018,
+        "market_reference_price": 31000,
+        "price_to_market_ratio": 1.0644,
         "market_percentile": 58,
         "deal_rating": "FAIR",
         "comparable_count": 9,

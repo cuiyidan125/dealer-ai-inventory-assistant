@@ -157,6 +157,31 @@ work. It:
 floor, expected days to sale, holding-cost and depreciation exposure, inventory forecasting,
 event-plan outcomes, and approval conditions.
 
+### Enterprise AI orchestration
+
+The most important idea here is not any single skill — it is that **an LLM coordinates several
+trusted, deterministic business capabilities to solve one dealer problem**, rather than replacing the
+domain algorithms. The pricing engine, the forecasting model, and the promotion planner stay
+independent, trusted services; the AI is responsible for **intent understanding, workflow
+orchestration, evidence synthesis, recommendation explanation, and human decision support** — the
+same division of labor as Microsoft Copilot, Salesforce Agentforce, or ServiceNow's AI Agent.
+
+A single-vehicle question makes this concrete. Ask **"I've had this F-150 for 92 days — what should
+I do?"** and the orchestrator:
+
+1. detects the intent (*Improve Aging Inventory* for one unit),
+2. invokes all three capabilities — Single Vehicle Valuation, Portfolio Forecast, and Event Promotion
+   Planner,
+3. aggregates their outputs, and
+4. synthesizes **one prioritized action plan** — reduce the asking price, include it in the campaign,
+   refresh the merchandising — where every figure is copied from a skill, each step carries its
+   **evidence and trade-offs (pros and cons)**, and the plan ends at a **human approval gate**, never
+   an automatic write-back.
+
+Which capabilities fire depends on the intent, not a fixed rule: a pure pricing question runs
+valuation only; an aging question about one unit runs all three. The orchestrator (`agents/
+vehicle_advisor.py`) selects, orders, and explains — it computes no number of its own.
+
 > **The language model does not replace the pricing engine.** It interprets the request, calls
 > existing capabilities, and explains their validated results.
 
