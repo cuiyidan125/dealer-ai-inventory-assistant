@@ -208,21 +208,81 @@ def detect_new_workflow(text: str, state: ConversationState):
     """Return the RouteResult when `text` is a strong new-workflow intent that should switch away
     from the active conversation, else None. Deterministic — this reads the existing router.
 
-    Only a Single Vehicle Valuation (`PRICE_INVENTORY`) switches: event/promotion phrases route to
-    MERCHANDISE and must stay aging reruns, and same-workflow (IMPROVE_AGING) routes are follow-ups.
+    The rule depends on which workflow is active:
+
+    * A Single Vehicle Valuation (`PRICE_INVENTORY`) is always a switch target — "price the Honda",
+      "value another vehicle" — whichever workflow is active.
+    * From the multi-turn **aging** result, non-valuation routes stay follow-ups: event/promotion
+      phrases add an event to the *same* aging analysis (a rerun), and aging routes are follow-ups.
+    * From a **single-skill** result (a valuation, a portfolio forecast, a promotion plan), a route
+      to a *different* workflow is a genuine switch — e.g. a portfolio question asked after a
+      valuation, which otherwise dead-ended in "ask me to value another vehicle".
+
     An explicit aging-intent word keeps the message a follow-up regardless."""
     if _AGING_INTENT.search(text):
         return None
     routed = route(text)
-    if routed.selected_workflow is WorkflowContext.PRICE_INVENTORY:
+    target = routed.selected_workflow
+    if target is None:
+        return None
+    if target is WorkflowContext.PRICE_INVENTORY:
+        return routed
+    # Non-valuation target: only switch away from a single-skill result, and only to a *different*
+    # workflow. Aging (and no active result) keeps these as follow-ups/reruns.
+    active = state.active_workflow_type
+    if active in (None, "IMPROVE_AGING_INVENTORY"):
+        return None
+    if target.name != active:
         return routed
     return None
 
 
 def _switch_workflow(text, state, routed, as_of: datetime) -> FollowupResult:
+    """Switch the conversation to the routed workflow. A valuation resolves a target vehicle and
+    runs the single-vehicle skill; any other workflow (portfolio forecast, event promotion) runs
+    through the existing deterministic assistant. Either way the caller performs the state switch
+    only on success; on failure the active result is left untouched."""
+    if routed.selected_workflow is WorkflowContext.PRICE_INVENTORY:
+        return _switch_to_valuation(text, state, routed, as_of)
+    return _switch_to_other_workflow(text, state, routed, as_of)
+
+
+def _switch_to_other_workflow(text, state, routed, as_of: datetime) -> FollowupResult:
+    """Switch to a non-valuation workflow (portfolio forecast or event promotion) by running the
+    existing deterministic assistant. On success returns a SWITCH; when the workflow needs an input
+    it could not resolve (e.g. a promotion with no named event) it asks; on failure it keeps the
+    previous result untouched."""
+    try:
+        response = run_assistant(text, as_of=as_of)
+    except Exception as error:  # noqa: BLE001 — a failed switch must never overwrite the prior result
+        return FollowupResult(
+            SOURCE_ERROR,
+            f"I couldn't complete that ({type(error).__name__}); I've kept the previous analysis.",
+            success=False)
+
+    if response.state is AssistantState.ROUTED_AND_EXECUTED \
+            and response.workflow is routed.selected_workflow:
+        prior = _workflow_label(state.active_workflow_type)
+        target_label = _workflow_label(response.workflow.name)
+        transition = f"Switching from {prior} to {target_label}."
+        ids = (response.resolved_vehicle_id,) if response.resolved_vehicle_id else ()
+        return FollowupResult(SOURCE_SWITCH, transition, referenced_ids=ids,
+                              success=True, response=response)
+
+    if response.state is AssistantState.NEEDS_CLARIFICATION:
+        # e.g. a promotion request that named no event on the calendar — ask, don't switch.
+        return FollowupResult(SOURCE_CLARIFICATION,
+                              response.message or "I need a bit more detail to run that.")
+    return FollowupResult(
+        SOURCE_ERROR,
+        "That workflow could not be completed, so I've kept the previous analysis.",
+        success=False)
+
+
+def _switch_to_valuation(text, state, routed, as_of: datetime) -> FollowupResult:
     """Resolve the target vehicle and run the existing deterministic valuation. On success returns
     a SWITCH result (the caller performs the state switch); on failure or ambiguity it returns an
-    error/clarification and the active aging result is left untouched."""
+    error/clarification and the active result is left untouched."""
     target, ambiguous = _price_target(text, state)
     if ambiguous:
         options = _describe_ids(state, ambiguous)
