@@ -2,18 +2,186 @@
   "data": {
     "dealer_id": "DEALER-1001",
     "cost_basis": {
-      "V-10001": { "acquisition_cost": 23500, "auction_fee": 395, "transportation_cost": 285, "reconditioning_cost": 1200, "accrued_holding_cost": 318, "financing_amount": 23500, "direct_selling_costs": 450 },
-      "V-10002": { "acquisition_cost": 22800, "auction_fee": 395, "transportation_cost": 240, "reconditioning_cost": 890,  "accrued_holding_cost": 378, "financing_amount": 22800, "direct_selling_costs": 450 },
-      "V-10003": { "acquisition_cost": 27400, "auction_fee": 450, "transportation_cost": 520, "reconditioning_cost": 1650, "accrued_holding_cost": 438, "financing_amount": 27400, "direct_selling_costs": 450 },
-      "V-10004": { "acquisition_cost": 12900, "auction_fee": 350, "transportation_cost": 210, "reconditioning_cost": 1440, "accrued_holding_cost": 825, "financing_amount": 12900, "direct_selling_costs": 450 },
-      "V-10005": { "acquisition_cost": 22600, "auction_fee": 495, "transportation_cost": 640, "reconditioning_cost": 3850, "accrued_holding_cost": 928, "financing_amount": 22600, "direct_selling_costs": 450 },
-      "V-10006": { "acquisition_cost": 18900, "auction_fee": 395, "transportation_cost": 310, "reconditioning_cost": 640,  "accrued_holding_cost": 533, "financing_amount": 18900, "direct_selling_costs": 450 },
-      "V-10007": { "acquisition_cost": 24100, "auction_fee": 395, "transportation_cost": 265, "reconditioning_cost": 980,  "accrued_holding_cost": 249, "financing_amount": 24100, "direct_selling_costs": 450 },
-      "V-10008": { "acquisition_cost": 22200, "auction_fee": 395, "transportation_cost": 300, "reconditioning_cost": 720,  "accrued_holding_cost": 284, "financing_amount": 22200, "direct_selling_costs": 450 },
-      "V-10009": { "acquisition_cost": 19400, "auction_fee": 450, "transportation_cost": 480, "reconditioning_cost": 1980, "accrued_holding_cost": 352, "financing_amount": 19400, "direct_selling_costs": 450 },
-      "V-10010": { "acquisition_cost": 30800, "auction_fee": 450, "transportation_cost": 340, "reconditioning_cost": 880,  "accrued_holding_cost": 223, "financing_amount": 30800, "direct_selling_costs": 450 },
-      "V-10011": { "acquisition_cost": 15600, "auction_fee": 350, "transportation_cost": 195, "reconditioning_cost": 1130, "accrued_holding_cost": 627, "financing_amount": 15600, "direct_selling_costs": 450 },
-      "V-10012": { "acquisition_cost": 24900, "auction_fee": 450, "transportation_cost": 410, "reconditioning_cost": 2240, "accrued_holding_cost": 1117, "financing_amount": 24900, "direct_selling_costs": 450 }
+      "V-10001": {
+        "acquisition_cost": 23500,
+        "auction_fee": 395,
+        "transportation_cost": 285,
+        "reconditioning_cost": 1200,
+        "accrued_holding_cost": 318,
+        "financing_amount": 23500,
+        "direct_selling_costs": 450
+      },
+      "V-10002": {
+        "acquisition_cost": 22800,
+        "auction_fee": 395,
+        "transportation_cost": 240,
+        "reconditioning_cost": 890,
+        "accrued_holding_cost": 378,
+        "financing_amount": 22800,
+        "direct_selling_costs": 450
+      },
+      "V-10003": {
+        "acquisition_cost": 27400,
+        "auction_fee": 450,
+        "transportation_cost": 520,
+        "reconditioning_cost": 1650,
+        "accrued_holding_cost": 438,
+        "financing_amount": 27400,
+        "direct_selling_costs": 450
+      },
+      "V-10004": {
+        "acquisition_cost": 12900,
+        "auction_fee": 350,
+        "transportation_cost": 210,
+        "reconditioning_cost": 1440,
+        "accrued_holding_cost": 825,
+        "financing_amount": 12900,
+        "direct_selling_costs": 450
+      },
+      "V-10005": {
+        "acquisition_cost": 22600,
+        "auction_fee": 495,
+        "transportation_cost": 640,
+        "reconditioning_cost": 3850,
+        "accrued_holding_cost": 928,
+        "financing_amount": 22600,
+        "direct_selling_costs": 450
+      },
+      "V-10006": {
+        "acquisition_cost": 18900,
+        "auction_fee": 395,
+        "transportation_cost": 310,
+        "reconditioning_cost": 640,
+        "accrued_holding_cost": 533,
+        "financing_amount": 18900,
+        "direct_selling_costs": 450
+      },
+      "V-10007": {
+        "acquisition_cost": 24100,
+        "auction_fee": 395,
+        "transportation_cost": 265,
+        "reconditioning_cost": 980,
+        "accrued_holding_cost": 249,
+        "financing_amount": 24100,
+        "direct_selling_costs": 450
+      },
+      "V-10008": {
+        "acquisition_cost": 22200,
+        "auction_fee": 395,
+        "transportation_cost": 300,
+        "reconditioning_cost": 720,
+        "accrued_holding_cost": 284,
+        "financing_amount": 22200,
+        "direct_selling_costs": 450
+      },
+      "V-10009": {
+        "acquisition_cost": 19400,
+        "auction_fee": 450,
+        "transportation_cost": 480,
+        "reconditioning_cost": 1980,
+        "accrued_holding_cost": 352,
+        "financing_amount": 19400,
+        "direct_selling_costs": 450
+      },
+      "V-10010": {
+        "acquisition_cost": 30800,
+        "auction_fee": 450,
+        "transportation_cost": 340,
+        "reconditioning_cost": 880,
+        "accrued_holding_cost": 223,
+        "financing_amount": 30800,
+        "direct_selling_costs": 450
+      },
+      "V-10011": {
+        "acquisition_cost": 15600,
+        "auction_fee": 350,
+        "transportation_cost": 195,
+        "reconditioning_cost": 1130,
+        "accrued_holding_cost": 627,
+        "financing_amount": 15600,
+        "direct_selling_costs": 450
+      },
+      "V-10012": {
+        "acquisition_cost": 24900,
+        "auction_fee": 450,
+        "transportation_cost": 410,
+        "reconditioning_cost": 2240,
+        "accrued_holding_cost": 1117,
+        "financing_amount": 24900,
+        "direct_selling_costs": 450
+      },
+      "V-10013": {
+        "acquisition_cost": 29476,
+        "auction_fee": 450,
+        "transportation_cost": 350,
+        "reconditioning_cost": 900,
+        "accrued_holding_cost": 850,
+        "financing_amount": 29476,
+        "direct_selling_costs": 450
+      },
+      "V-10014": {
+        "acquisition_cost": 24784,
+        "auction_fee": 450,
+        "transportation_cost": 350,
+        "reconditioning_cost": 900,
+        "accrued_holding_cost": 850,
+        "financing_amount": 24784,
+        "direct_selling_costs": 450
+      },
+      "V-10015": {
+        "acquisition_cost": 28464,
+        "auction_fee": 450,
+        "transportation_cost": 350,
+        "reconditioning_cost": 900,
+        "accrued_holding_cost": 850,
+        "financing_amount": 28464,
+        "direct_selling_costs": 450
+      },
+      "V-10016": {
+        "acquisition_cost": 22024,
+        "auction_fee": 450,
+        "transportation_cost": 350,
+        "reconditioning_cost": 900,
+        "accrued_holding_cost": 850,
+        "financing_amount": 22024,
+        "direct_selling_costs": 450
+      },
+      "V-10017": {
+        "acquisition_cost": 22484,
+        "auction_fee": 450,
+        "transportation_cost": 350,
+        "reconditioning_cost": 900,
+        "accrued_holding_cost": 850,
+        "financing_amount": 22484,
+        "direct_selling_costs": 450
+      },
+      "V-10018": {
+        "acquisition_cost": 24000,
+        "auction_fee": 450,
+        "transportation_cost": 350,
+        "reconditioning_cost": 900,
+        "accrued_holding_cost": 850,
+        "financing_amount": 24000,
+        "direct_selling_costs": 450
+      },
+      "V-10019": {
+        "acquisition_cost": 29400,
+        "auction_fee": 450,
+        "transportation_cost": 350,
+        "reconditioning_cost": 1650,
+        "accrued_holding_cost": 850,
+        "financing_amount": 29400,
+        "direct_selling_costs": 450
+      },
+      "V-10020": {
+        "acquisition_cost": 21012,
+        "auction_fee": 450,
+        "transportation_cost": 350,
+        "reconditioning_cost": 900,
+        "accrued_holding_cost": 850,
+        "financing_amount": 21012,
+        "direct_selling_costs": 450
+      }
     },
     "_note_accrued_holding_cost": "CASH only (D3): floorplan interest, lot, insurance, maintenance, admin accrued to date. Slot opportunity cost is imputed and is never included here -- it is computed in domain/holding_cost.py and excluded from break-even.",
     "_note_underwater": "V-10005 carries $3,850 of reconditioning against a soft luxury market, producing a break-even above market value. That is the intended BREAK_EVEN_EXCEEDS_MARKET_VALUE fixture."

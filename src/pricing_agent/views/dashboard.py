@@ -121,8 +121,12 @@ def render_dashboard(workflow_context: WorkflowContext | None = None) -> None:
     c1.metric(T.metric("units_on_lot"), capacity["current_inventory"],
               f"{capacity['physical_open_slots']} spaces open", delta_color="off")
     c2.metric(T.metric("lot_capacity_used"), f"{capacity['current_utilization']:.0%}",
-              f"{capacity['current_utilization'] - capacity['target_utilization']:+.0%} vs target",
-              delta_color="inverse")
+              f"{capacity['current_utilization'] - capacity['target_utilization']:+.0%} "
+              f"vs {capacity['target_utilization']:.0%} target",
+              delta_color="inverse",
+              help=(f"Target lot utilization is {capacity['target_utilization']:.0%} — a healthy "
+                    "fullness that still leaves room to acquire. Above it means the lot is "
+                    "carrying more inventory than planned."))
     c3.metric(T.metric("over_90"), f"{aging['aged_concentration_pct'] * capacity['current_inventory']:.0f}",
               f"{aging['aged_concentration_pct']:.0%} of lot", delta_color="off")
     c4.metric(

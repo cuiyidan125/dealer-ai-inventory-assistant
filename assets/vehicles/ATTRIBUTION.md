@@ -186,6 +186,110 @@ Each original was downscaled to at most 1600px wide and re-encoded as progressiv
 JPEG (quality 86). EXIF metadata was dropped. No cropping, retouching, or colour
 adjustment was applied — the cards crop at render time via `object-fit: cover`.
 
+## V-10013 — 2021 Toyota Highlander XLE
+
+| | |
+| --- | --- |
+| **Local file** | `assets/vehicles/2021_toyota_highlander_xle.jpg` |
+| **Source website** | Wikimedia Commons |
+| **File page** | https://commons.wikimedia.org/wiki/File:2021_Toyota_Highlander_XLE_AWD,_front_12.12.20.jpg |
+| **Original image URL** | https://upload.wikimedia.org/wikipedia/commons/c/c4/2021_Toyota_Highlander_XLE_AWD%2C_front_12.12.20.jpg |
+| **Creator** | Kevauto |
+| **Licence** | CC BY-SA 4.0 |
+| **Licence URL** | https://creativecommons.org/licenses/by-sa/4.0 |
+| **Prepared** | 3166x1902 → 1600x961, 280 KB |
+
+## V-10014 — 2022 Honda CR-V EX
+
+| | |
+| --- | --- |
+| **Local file** | `assets/vehicles/2022_honda_crv_ex.jpg` |
+| **Source website** | Wikimedia Commons |
+| **File page** | https://commons.wikimedia.org/wiki/File:2020_Honda_CR-V_LX_in_Modern_Steel_Metallic,_front_left,_2026-07-03.jpg |
+| **Original image URL** | https://upload.wikimedia.org/wikipedia/commons/9/94/2020_Honda_CR-V_LX_in_Modern_Steel_Metallic%2C_front_left%2C_2026-07-03.jpg |
+| **Creator** | Elise240SX |
+| **Licence** | CC BY-SA 4.0 |
+| **Licence URL** | https://creativecommons.org/licenses/by-sa/4.0 |
+| **Prepared** | 5265x3154 → 1600x958, 298 KB |
+
+## V-10015 — 2020 Toyota Tacoma SR5
+
+| | |
+| --- | --- |
+| **Local file** | `assets/vehicles/2020_toyota_tacoma_sr5.jpg` |
+| **Source website** | Wikimedia Commons |
+| **File page** | https://commons.wikimedia.org/wiki/File:2019_Toyota_Tacoma_SR5_4WD_Access_Cab,_front_right.jpg |
+| **Original image URL** | https://upload.wikimedia.org/wikipedia/commons/4/41/2019_Toyota_Tacoma_SR5_4WD_Access_Cab%2C_front_right.jpg |
+| **Creator** | MercurySable99 |
+| **Licence** | CC BY-SA 4.0 |
+| **Licence URL** | https://creativecommons.org/licenses/by-sa/4.0 |
+| **Prepared** | 4693x2380 → 1600x811, 217 KB |
+
+## V-10016 — 2021 Mazda CX-5 Touring
+
+| | |
+| --- | --- |
+| **Local file** | `assets/vehicles/2021_mazda_cx5_touring.jpg` |
+| **Source website** | Wikimedia Commons |
+| **File page** | https://commons.wikimedia.org/wiki/File:2020-2021_Mazda_CX-5_XD_AWD.jpg |
+| **Original image URL** | https://upload.wikimedia.org/wikipedia/commons/5/58/2020-2021_Mazda_CX-5_XD_AWD.jpg |
+| **Creator** | TTTNIS |
+| **Licence** | CC0 |
+| **Licence URL** | http://creativecommons.org/publicdomain/zero/1.0/deed.en |
+| **Prepared** | 4680x2376 → 1600x812, 227 KB |
+
+## V-10017 — 2022 Hyundai Tucson SEL
+
+| | |
+| --- | --- |
+| **Local file** | `assets/vehicles/2022_hyundai_tucson_sel.jpg` |
+| **Source website** | Wikimedia Commons |
+| **File page** | https://commons.wikimedia.org/wiki/File:0_Hyundai_Tucson_(NX4)_N_Line.jpg |
+| **Original image URL** | https://upload.wikimedia.org/wikipedia/commons/f/fe/0_Hyundai_Tucson_%28NX4%29_N_Line.jpg |
+| **Creator** | Benespit |
+| **Licence** | CC BY-SA 4.0 |
+| **Licence URL** | https://creativecommons.org/licenses/by-sa/4.0 |
+| **Prepared** | 2056x1257 → 1600x978, 301 KB |
+
+## V-10018 — 2023 Kia Sportage LX
+
+| | |
+| --- | --- |
+| **Local file** | `assets/vehicles/2023_kia_sportage_lx.jpg` |
+| **Source website** | Wikimedia Commons |
+| **File page** | https://commons.wikimedia.org/wiki/File:2023_Kia_Sportage_X-Line_AWD,_front_right,_12-08-2022.jpg |
+| **Original image URL** | https://upload.wikimedia.org/wikipedia/commons/5/5f/2023_Kia_Sportage_X-Line_AWD%2C_front_right%2C_12-08-2022.jpg |
+| **Creator** | MercurySable99 |
+| **Licence** | CC BY-SA 4.0 |
+| **Licence URL** | https://creativecommons.org/licenses/by-sa/4.0 |
+| **Prepared** | 4220x2464 → 1600x934, 203 KB |
+
+## V-10019 — 2019 Chevrolet Silverado 1500 LT
+
+| | |
+| --- | --- |
+| **Local file** | `assets/vehicles/2019_chevrolet_silverado_1500_lt.jpg` |
+| **Source website** | Wikimedia Commons |
+| **File page** | https://commons.wikimedia.org/wiki/File:2019_Chevrolet_Silverado_1500_Crew_Cab_LT_(front),_10.20.19.jpg |
+| **Original image URL** | https://upload.wikimedia.org/wikipedia/commons/7/72/2019_Chevrolet_Silverado_1500_Crew_Cab_LT_%28front%29%2C_10.20.19.jpg |
+| **Creator** | Ghostofakina |
+| **Licence** | CC BY-SA 4.0 |
+| **Licence URL** | https://creativecommons.org/licenses/by-sa/4.0 |
+| **Prepared** | 3024x1920 → 1600x1016, 406 KB |
+
+## V-10020 — 2021 Volkswagen Tiguan SE
+
+| | |
+| --- | --- |
+| **Local file** | `assets/vehicles/2021_volkswagen_tiguan_se.jpg` |
+| **Source website** | Wikimedia Commons |
+| **File page** | https://commons.wikimedia.org/wiki/File:2021_Volkswagen_Tiguan_R_Line.jpg |
+| **Original image URL** | https://upload.wikimedia.org/wikipedia/commons/3/3f/2021_Volkswagen_Tiguan_R_Line.jpg |
+| **Creator** | Vauxford |
+| **Licence** | CC BY-SA 4.0 |
+| **Licence URL** | https://creativecommons.org/licenses/by-sa/4.0 |
+| **Prepared** | 4262x2509 → 1600x942, 294 KB |
+
 ## Accuracy note
 
 These are stand-ins for merchandising photography, not records of specific vehicles.

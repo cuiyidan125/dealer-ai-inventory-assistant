@@ -98,7 +98,7 @@ def test_portfolio_request_executes():
     response = run("What will my inventory look like in the next 30 days?")
     assert response.state is AssistantState.ROUTED_AND_EXECUTED
     assert response.workflow is WorkflowContext.ACQUIRE_INVENTORY
-    assert response.summary["units_on_lot"] == 12
+    assert response.summary["units_on_lot"] == 20
 
 
 def test_promotion_with_named_event_executes():

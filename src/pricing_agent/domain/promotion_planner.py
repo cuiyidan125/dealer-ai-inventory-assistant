@@ -388,6 +388,9 @@ def build_plan(
             "gross_impact": percentile_set(
                 plan_gross - baseline_gross, "USD", plan_draws.simulation_id
             ),
+            "total_front_end_gross": percentile_set(
+                plan_gross, "USD", plan_draws.simulation_id
+            ),
             "cash_holding_cost_savings": percentile_set(
                 holding_saved, "USD", plan_draws.simulation_id
             ),

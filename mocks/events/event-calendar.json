@@ -8,7 +8,12 @@
         "start_date": "2026-08-17",
         "end_date": "2026-08-21",
         "event_type": "SEASONAL_CLEARANCE",
-        "eligible_inventory_filter": { "status": ["ACTIVE"], "min_days_in_inventory": 21 },
+        "eligible_inventory_filter": {
+          "status": [
+            "ACTIVE"
+          ],
+          "min_days_in_inventory": 21
+        },
         "promotion_budget": 12000,
         "dealer_funded_incentives": 12000,
         "partner_funded_incentives": 0,
@@ -23,7 +28,11 @@
         "start_date": "2026-09-04",
         "end_date": "2026-09-07",
         "event_type": "HOLIDAY",
-        "eligible_inventory_filter": { "status": ["ACTIVE"] },
+        "eligible_inventory_filter": {
+          "status": [
+            "ACTIVE"
+          ]
+        },
         "promotion_budget": 18000,
         "dealer_funded_incentives": 14000,
         "partner_funded_incentives": 4000,

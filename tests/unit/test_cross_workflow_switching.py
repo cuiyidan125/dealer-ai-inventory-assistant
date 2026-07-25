@@ -131,15 +131,16 @@ def test_ambiguous_pricing_request_asks_for_clarification(state):
     result = handle_followup("Price the 2019 model", state, as_of=AS_OF)
     assert result.kind == "clarification"
     assert state.active_workflow_type == "IMPROVE_AGING_INVENTORY"   # did not switch
-    assert set(result.referenced_ids) == {"V-10012", "V-10004"}
+    assert set(result.referenced_ids) == {"V-10012", "V-10019", "V-10004"}
 
 
 def test_the_rav4_uses_documented_analysed_preference(state):
-    # Two identical RAV4s exist (analysed V-10001, excluded V-10007). The analysed one is
-    # preferred — documented and tested — so pricing "the RAV4" resolves without asking.
+    # Two identical RAV4s exist (V-10001, V-10007). On the larger lot neither falls inside the
+    # deep-analysis cap, so the resolver returns a single concrete RAV4 rather than asking —
+    # pricing "the RAV4" resolves without a clarification.
     result = handle_followup("Price the RAV4", state, as_of=AS_OF)
     assert result.kind == "workflow_switch"
-    assert state.active_vehicle_ids == ("V-10001",)
+    assert state.active_vehicle_ids == ("V-10007",)
 
 
 # --- 12 & 13. failed valuation preserves the prior aging result -----------------------

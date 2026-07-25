@@ -57,6 +57,10 @@
           "$ref": "common-types.schema.json#/$defs/percentileSet",
           "description": "Change in front-end gross versus the no-promotion baseline. Negative values are expected for capacity-first plans."
         },
+        "total_front_end_gross": {
+          "$ref": "common-types.schema.json#/$defs/percentileSet",
+          "description": "Total front-end gross from vehicles sold within the event window under this plan (a level, not a delta). Highest for profit-protecting plans that discount least."
+        },
         "cash_holding_cost_savings": { "$ref": "common-types.schema.json#/$defs/percentileSet" },
         "depreciation_savings": { "$ref": "common-types.schema.json#/$defs/percentileSet" },
         "slot_days_released": { "$ref": "common-types.schema.json#/$defs/percentileSet" },

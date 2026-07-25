@@ -1,13 +1,12 @@
 {
   "data": {
     "dealer_id": "DEALER-1001",
-    "total_physical_slots": 14,
-    "current_inventory": 12,
+    "total_physical_slots": 22,
+    "current_inventory": 20,
     "reserved_slots": 3,
     "confirmed_inbound": 2,
     "expected_exits": 0,
     "target_utilization": 0.85,
-
     "_note_reserved_relationship": "D6: reserved_slots is a SUPERSET of confirmed_inbound. Here 3 slots are reserved, 2 of which are held for confirmed inbound units, leaving reserved_not_inbound = 1. Consumers must deduct confirmed_inbound OR reserved_slots in the flow equation, never both.",
     "_note_derived_fields": "physical_open_slots, effective_open_slots, current_utilization, and projected_utilization are computed in domain/portfolio.py from these primitives and are deliberately NOT returned here. A returned derived value that disagreed with the primitives would be unresolvable."
   },

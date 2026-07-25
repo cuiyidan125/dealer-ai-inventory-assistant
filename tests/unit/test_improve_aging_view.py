@@ -33,8 +33,9 @@ SUMMER = ImproveAgingRequest(
     event_name="Summer Clearance", available_events=("Summer Clearance", "Labor Day Sales Event"))
 
 # The Phase 5 baseline this polish must not disturb.
-BASELINE_SELECTED = ["V-10005", "V-10012", "V-10002", "V-10006", "V-10004", "V-10008", "V-10001"]
-BASELINE_EXCLUDED = ["V-10003", "V-10007", "V-10009", "V-10010", "V-10011"]
+BASELINE_SELECTED = ["V-10005", "V-10002", "V-10012", "V-10006", "V-10019", "V-10004", "V-10013",
+                     "V-10014", "V-10015", "V-10016", "V-10017", "V-10020", "V-10008", "V-10001"]
+BASELINE_EXCLUDED = ["V-10003", "V-10007", "V-10009", "V-10010", "V-10011", "V-10018"]
 BASELINE_PLAN = "CAPACITY_FIRST"
 
 
@@ -52,10 +53,10 @@ def no_event():
 def not_achievable():
     """A tighter 60% target that remains unreachable inside the new 2026-08-17 event window,
     kept as a probe so the TARGET_NOT_ACHIEVABLE copy and gap machinery stay covered. The
-    canonical 70% demo now resolves to AT_RISK (a legitimate result of the forward-looking
-    window); this probe does not change that demo, it only exercises the other state."""
+    canonical 70% demo now resolves to ACHIEVABLE_WITH_MARGIN_COST on the larger lot; this probe
+    does not change that demo, it only exercises the not-achievable state."""
     return run_improve_aging(MockTransport(as_of=AS_OF), ImproveAgingRequest(
-        target_utilization=0.60, event_requested=True, event_id="EVT-SUMMER-2026",
+        target_utilization=0.55, event_requested=True, event_id="EVT-SUMMER-2026",
         event_name="Summer Clearance", available_events=SUMMER.available_events))
 
 
@@ -76,13 +77,13 @@ def test_executive_metrics_come_straight_from_the_result(result):
 # --- 2. TARGET_NOT_ACHIEVABLE copy reflects the actual gap ----------------------------
 
 
-def test_canonical_demo_is_at_risk_with_the_new_event_window(result):
-    """The 2026-08-17 Summer Clearance window (19 days after the 2026-07-29 as_of) leaves
-    enough baseline selling time that the 70% target is now AT_RISK rather than not
-    achievable. Selection and plan are unchanged; only the promotion outcome moved."""
+def test_canonical_demo_is_achievable_with_margin_cost(result):
+    """On the 20-unit lot the 70% target inside the Summer Clearance window is reachable, but
+    only at a gross-margin cost — ACHIEVABLE_WITH_MARGIN_COST — so the three plans trade off on
+    total front-end gross: profit-protection keeps the most gross, freeing space costs the most."""
     assert result.state is WorkflowState.ROUTED_AND_EXECUTED
-    assert result.promotion_result["feasibility"]["status"] == "AT_RISK"
-    assert result.portfolio_summary["required_unit_reduction"] == 2
+    assert result.promotion_result["feasibility"]["status"] == "ACHIEVABLE_WITH_MARGIN_COST"
+    assert result.portfolio_summary["required_unit_reduction"] == 1
 
 
 def test_target_not_achievable_recommendation_and_gap(not_achievable):
@@ -92,7 +93,7 @@ def test_target_not_achievable_recommendation_and_gap(not_achievable):
     # The gap the view shows is required minus what the safe plan can release, from the result.
     required = not_achievable.portfolio_summary["required_unit_reduction"]
     achievable = not_achievable.promotion_result["feasibility"]["p50_achievable_incremental_units"]
-    assert required == 3 and achievable == 1.0       # 60% probe at the new window
+    assert required == 4 and achievable == 2.0       # 55% probe on the 20-unit lot
     assert (required - achievable) == 2              # the gap the copy narrates
 
 
@@ -257,37 +258,38 @@ def test_no_price_publishing_introduced(name):
 
 
 def test_reconciled_counts_no_event_shows_all_analysed(no_event):
-    """Without an event, 7 vehicles are analysed but two (V-10008, V-10001) carry no immediate
-    action. The reconciliation surfaces all 7 and names the two, instead of silently hiding them."""
+    """Without an event, 8 vehicles are analysed but two (V-10013, V-10014) carry no immediate
+    action. The reconciliation surfaces all 8 and names the two, instead of silently hiding them."""
     rc = view.reconciled_counts(no_event)
-    assert rc["analysed"] == 7
-    assert rc["immediate_action"] == 5
+    assert rc["analysed"] == 8
+    assert rc["immediate_action"] == 6
     assert rc["no_immediate_action"] == 2
-    assert set(rc["no_immediate_ids"]) == {"V-10008", "V-10001"}
+    assert set(rc["no_immediate_ids"]) == {"V-10013", "V-10014"}
     # Invariant the workspace relies on: the two buckets partition the analysed set.
     assert rc["immediate_action"] + rc["no_immediate_action"] == rc["analysed"]
     assert set(rc["immediate_ids"]).isdisjoint(rc["no_immediate_ids"])
 
 
 def test_reconciled_review_counts_distinguish_vehicles_from_records(no_event):
-    """The '17' is a count of approval records across 5 vehicles — the reconciliation reports both
-    so the metric stops implying 17 separate manager reviews."""
+    """The '20' is a count of approval records across 6 vehicles — the reconciliation reports both
+    so the metric stops implying 20 separate manager reviews."""
     rc = view.reconciled_counts(no_event)
-    assert rc["review_items"] == len(no_event.approvals_required) == 17
-    assert rc["review_vehicles"] == 5
+    assert rc["review_items"] == len(no_event.approvals_required) == 20
+    assert rc["review_vehicles"] == 6
     assert rc["review_vehicles"] == len(rc["review_vehicle_ids"])
     # Every review vehicle is one the workflow already flagged with a non-empty approvals list.
     flagged = {a["vehicle_id"] for a in no_event.consolidated_actions if a["approvals_required"]}
     assert set(rc["review_vehicle_ids"]) == flagged
 
 
-def test_reconciled_counts_with_event_needs_no_omission(result):
-    """With the Summer Clearance event the two hold-gross vehicles become promotion candidates,
-    so all analysed vehicles need action and nothing is omitted — the counts stay reconciled."""
+def test_reconciled_counts_with_event_stay_partitioned(result):
+    """With the Summer Clearance event the reconciliation invariants still hold: the analysed set
+    partitions cleanly into immediate and no-immediate, and review items reconcile to the records.
+    (The promoted units are lower-ranked candidates beyond the deep-analysis cap, so the two
+    hold-gross analysed vehicles remain no-immediate here.)"""
     rc = view.reconciled_counts(result)
-    assert rc["analysed"] == 7
-    assert rc["no_immediate_action"] == 0
-    assert rc["immediate_action"] == 7
+    assert rc["analysed"] == 8
+    assert rc["immediate_action"] + rc["no_immediate_action"] == rc["analysed"]
     assert rc["review_items"] == len(result.approvals_required)
 
 
@@ -295,9 +297,9 @@ def test_reconciliation_changes_no_classification(no_event):
     """The reconciliation must not move any vehicle between action buckets — the per-vehicle
     recommended_action the workflow produced is unchanged."""
     actions = {a["vehicle_id"]: a["recommended_action"] for a in no_event.consolidated_actions}
-    assert actions["V-10008"] == "NO_ACTION"
-    assert actions["V-10001"] == "NO_ACTION"
-    # The five immediate-action vehicles keep their action labels.
+    assert actions["V-10013"] == "NO_ACTION"
+    assert actions["V-10014"] == "NO_ACTION"
+    # The immediate-action vehicles keep their action labels.
     assert actions["V-10005"] == "WHOLESALE_OR_LOSS_MINIMIZATION_REVIEW"
     assert actions["V-10002"] == "MANAGER_REVIEW"
 
@@ -305,13 +307,13 @@ def test_reconciliation_changes_no_classification(no_event):
 def test_assistant_summary_carries_reconciled_counts():
     response = run_assistant("Which aging vehicles should I promote?", as_of=AS_OF)
     s = response.summary
-    assert s["deep_analysed_count"] == 7
-    assert s["immediate_action_count"] == 5
+    assert s["deep_analysed_count"] == 8
+    assert s["immediate_action_count"] == 6
     assert s["no_immediate_action_count"] == 2
-    assert s["review_vehicle_count"] == 5
-    assert s["review_item_count"] == 17
+    assert s["review_vehicle_count"] == 6
+    assert s["review_item_count"] == 20
     # The raw approval-record count is still available and unchanged.
-    assert s["approvals_required"] == 17
+    assert s["approvals_required"] == 20
 
 
 def test_disclosure_states_the_four_safeguards():

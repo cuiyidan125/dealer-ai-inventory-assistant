@@ -35,13 +35,13 @@ def test_numbers_and_selection_and_plan_unchanged():
         target_utilization=0.70, event_requested=True, event_id="EVT-SUMMER-2026",
         event_name="Summer Clearance", available_events=("Summer Clearance", "Labor Day Sales Event")))
     assert list(r.selection.candidate_ids) == \
-        ["V-10005", "V-10012", "V-10002", "V-10006", "V-10004", "V-10008", "V-10001"]
+        ["V-10005", "V-10002", "V-10012", "V-10006", "V-10019", "V-10004", "V-10013",
+         "V-10014", "V-10015", "V-10016", "V-10017", "V-10020", "V-10008", "V-10001"]
     assert [e.vehicle_id for e in r.selection.exclusions] == \
-        ["V-10003", "V-10007", "V-10009", "V-10010", "V-10011"]
+        ["V-10003", "V-10007", "V-10009", "V-10010", "V-10011", "V-10018"]
     assert r.promotion_result["recommended_plan"]["plan_type"] == "CAPACITY_FIRST"
-    assert r.portfolio_summary["required_unit_reduction"] == 2
-    assert r.portfolio_summary["probability_target_achieved"] == 0.0085 or \
-        round(r.portfolio_summary["probability_target_achieved"], 4) == 0.4305
+    assert r.portfolio_summary["required_unit_reduction"] == 1
+    assert round(r.portfolio_summary["probability_target_achieved"], 4) == 0.733
 
 
 def test_price_and_portfolio_numbers_unchanged():
@@ -53,8 +53,8 @@ def test_price_and_portfolio_numbers_unchanged():
     assert scen["additional_days_to_sale"]["p50"] == 30.0
     assert sv["break_even_analysis"]["current_accounting_break_even"] == 26148.0
     pf = inventory_portfolio.analyze(MockTransport(as_of=AS_OF))
-    assert pf["capacity_position"]["current_inventory"] == 12
-    assert pf["financial_risk"]["units_below_break_even"] == 3
+    assert pf["capacity_position"]["current_inventory"] == 20
+    assert pf["financial_risk"]["units_below_break_even"] == 4
 
 
 def test_warning_and_approval_results_unchanged():
