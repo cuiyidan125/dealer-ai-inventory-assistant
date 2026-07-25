@@ -547,11 +547,9 @@ def _render_ambiguous(response: AssistantResponse) -> None:
         cols[0].markdown(f"**{label}** · `{candidate.get('vehicle_id')}`")
         cols[1].caption(f"{candidate.get('mileage'):,} mi" if candidate.get("mileage") else "—")
         if cols[2].button("Analyze this one", key=f"pick_{candidate.get('vehicle_id')}"):
-            st.session_state[SELECTED_VEHICLE_KEY] = candidate.get("vehicle_id")
-            # Re-run the resolved vehicle straight through the pricing path.
-            st.session_state[RESPONSE_KEY] = run_assistant(
-                str(candidate.get("vehicle_id")), as_of=AS_OF
-            )
+            # Open a conversation around the picked vehicle, same as typing it directly — so the
+            # dealer lands in the multi-turn thread with a follow-up box, not a single-turn view.
+            _start_conversation(str(candidate.get("vehicle_id")))
             st.rerun()
 
 

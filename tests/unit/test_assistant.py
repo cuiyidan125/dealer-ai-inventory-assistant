@@ -65,6 +65,28 @@ def test_ambiguous_vehicle():
     assert {c["vehicle_id"] for c in response.candidates} == {"V-10001", "V-10007"}
 
 
+def test_partial_make_surfaces_candidates_instead_of_forcing_exact_input():
+    # A make alone lists the matching vehicles for the dealer to pick from — no full
+    # year/make/model/trim required. (The view renders these as clickable "Analyze this one".)
+    response = run("price toyota")
+    assert response.state is AssistantState.AMBIGUOUS_MATCH
+    makes = {c["make"] for c in response.candidates}
+    assert makes == {"Toyota"} and len(response.candidates) >= 3
+
+
+def test_partial_model_surfaces_candidates():
+    response = run("price the RAV4")
+    assert response.state is AssistantState.AMBIGUOUS_MATCH
+    assert {c["vehicle_id"] for c in response.candidates} == {"V-10001", "V-10007"}
+
+
+def test_partial_make_that_is_unique_prices_directly():
+    # Only one Ford on the lot, so a make alone resolves straight to it.
+    response = run("price a Ford")
+    assert response.state is AssistantState.ROUTED_AND_EXECUTED
+    assert response.resolved_vehicle_id == "V-10003"
+
+
 def test_improve_aging_now_executes():
     """Phase 5: the aging orchestration is connected. It runs the portfolio diagnosis and
     single-vehicle analysis for selected candidates."""
