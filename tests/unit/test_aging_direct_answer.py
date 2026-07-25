@@ -22,7 +22,7 @@ AGENTS = Path(__file__).resolve().parents[2] / "src" / "pricing_agent" / "agents
 AS_OF = datetime(2026, 7, 29, 14, 0, tzinfo=timezone.utc)
 
 IMMEDIATE_IDS = ["V-10005", "V-10002", "V-10012", "V-10006", "V-10019", "V-10004"]
-NO_IMMEDIATE_IDS = ["V-10013", "V-10014"]
+NO_IMMEDIATE_IDS = ["V-10013", "V-10003"]
 ANALYSED_IDS = IMMEDIATE_IDS + NO_IMMEDIATE_IDS
 
 SUMMER = ImproveAgingRequest(

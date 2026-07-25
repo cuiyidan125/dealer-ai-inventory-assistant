@@ -21,12 +21,12 @@
         "direct_selling_costs": 450
       },
       "V-10003": {
-        "acquisition_cost": 27400,
+        "acquisition_cost": 23600,
         "auction_fee": 450,
-        "transportation_cost": 520,
-        "reconditioning_cost": 1650,
-        "accrued_holding_cost": 438,
-        "financing_amount": 27400,
+        "transportation_cost": 350,
+        "reconditioning_cost": 900,
+        "accrued_holding_cost": 850,
+        "financing_amount": 23600,
         "direct_selling_costs": 450
       },
       "V-10004": {

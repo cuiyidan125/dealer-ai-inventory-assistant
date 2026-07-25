@@ -40,7 +40,7 @@
     {
       "id": "SV-03",
       "name": "P50 under 90 days, P90 over 90 days",
-      "vehicle_id": "V-10003",
+      "vehicle_id": "V-10008",
       "mutations": [],
       "expect": {
         "warnings_must_include": ["P90_PROJECTED_INVENTORY_AGE_OVER_90_DAYS"],

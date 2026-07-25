@@ -17,8 +17,8 @@ from pricing_agent.agents.conversation import resolve_reference, vehicle_index
 AS_OF = datetime(2026, 7, 29, 14, 0, tzinfo=timezone.utc)
 
 # The 8 deep-analysed candidates (MAX_DEEP_ANALYSIS), in vehicle_evidence order.
-BASELINE_ANALYSED = ["V-10005", "V-10002", "V-10012", "V-10006", "V-10019", "V-10004", "V-10013", "V-10014"]
-BASELINE_EXCLUDED = ["V-10003", "V-10007", "V-10009", "V-10010", "V-10011", "V-10018"]
+BASELINE_ANALYSED = ["V-10005", "V-10002", "V-10012", "V-10006", "V-10019", "V-10004", "V-10013", "V-10003"]
+BASELINE_EXCLUDED = ["V-10007", "V-10009", "V-10010", "V-10011", "V-10018"]
 
 
 @pytest.fixture(scope="module")

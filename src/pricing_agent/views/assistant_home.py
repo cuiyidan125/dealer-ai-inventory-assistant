@@ -329,6 +329,9 @@ def _workflow_label(response: AssistantResponse) -> str:
 
 
 def _render_executed(response: AssistantResponse) -> None:
+    if getattr(response, "advice", None) is not None:
+        _render_advice(response)
+        return
     if response.workflow is WorkflowContext.PRICE_INVENTORY:
         _render_pricing_result(response)
     elif response.workflow is WorkflowContext.ACQUIRE_INVENTORY:
@@ -337,6 +340,43 @@ def _render_executed(response: AssistantResponse) -> None:
         _render_promotion_result(response)
     elif response.workflow is WorkflowContext.IMPROVE_AGING_INVENTORY:
         _render_improve_aging_result(response)
+
+
+def _render_advice(response: AssistantResponse) -> None:
+    """The single-vehicle AI orchestrator result: intent + capabilities invoked, a prioritized
+    action plan with evidence and trade-offs, and a human approval gate. The orchestrator computed
+    nothing — every figure is copied from one of the three skills."""
+    adv = response.advice
+    st.success(f"**AI Workflow** — one question, three business capabilities coordinated.", icon="🧭")
+    c1, c2 = st.columns([1, 2])
+    c1.caption("Intent detected")
+    c1.markdown(f"**{adv.intent}**")
+    c2.caption("Business capabilities invoked")
+    c2.markdown("　".join(f"✅ {cap}" for cap in adv.capabilities_invoked))
+
+    st.markdown(f"### Recommended action plan — {adv.description}")
+    st.caption("Synthesized from the three skills; the AI orders and explains, it does not compute.")
+    for a in adv.actions:
+        with st.container(border=True):
+            st.markdown(f"**Priority {a.priority} · {a.title}**")
+            if a.detail:
+                st.caption(a.detail)
+            for e in a.evidence:
+                st.markdown(f"- {e}")
+            tcols = st.columns(2)
+            tcols[0].markdown("**Pros**  \n" + "  \n".join(f"• {p}" for p in a.pros))
+            tcols[1].markdown("**Cons**  \n" + "  \n".join(f"• {c}" for c in a.cons))
+            st.caption("From: " + " · ".join(a.source_skills))
+    st.info(f"Review again in {adv.review_in_days} days.", icon="🗓️")
+
+    st.markdown("**Recommended next action**")
+    b1, b2 = st.columns([1, 2])
+    if b1.button("Approve recommendation", type="primary", key="advice_approve"):
+        st.success("Approved — routed to the manager's queue. (Prototype: nothing is written back "
+                   "to inventory; the human remains the decision-maker.)")
+    if response.target_url:
+        with b2:
+            _open_workflow_link(response.target_url, "Open the full analysis →")
 
 
 def _render_improve_aging_result(response: AssistantResponse, *, show_followups: bool = True) -> None:
