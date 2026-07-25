@@ -444,6 +444,7 @@ def _vehicles_excluded(result, facts: dict) -> None:
     for e in result.selection.exclusions:
         fact = facts.get(e.vehicle_id, {})
         rows.append({
+            "Photo": ui_components.thumbnail_uri(fact.get("image_url")),
             "Vehicle": e.description,
             "Why protected or excluded": "; ".join(copy.exclusion_label(c) for c in e.reason_codes),
             "Days on lot": fact.get("days_in_inventory"),
@@ -452,7 +453,10 @@ def _vehicles_excluded(result, facts: dict) -> None:
         })
     st.dataframe(
         pd.DataFrame(rows), hide_index=True,
-        column_config={"Days on lot": st.column_config.NumberColumn(format="%.0f")},
+        column_config={
+            "Photo": st.column_config.ImageColumn("Photo", width="small"),
+            "Days on lot": st.column_config.NumberColumn(format="%.0f"),
+        },
     )
     with st.expander("View technical reason codes"):
         st.dataframe(
