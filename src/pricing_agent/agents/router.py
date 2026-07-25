@@ -165,10 +165,14 @@ class ParsedVehicle:
         )
 
     def has_identity(self) -> bool:
-        """Enough to attempt resolution: an id, a VIN, or at least a make and model."""
+        """Enough to attempt resolution: an id, a VIN, or at least a make or a model.
+
+        A make alone ("Toyota") or a model alone ("RAV4") is enough to narrow the lot — the
+        resolver returns the matching vehicles as candidates for the dealer to choose between,
+        rather than forcing a full year/make/model/trim description up front."""
         if self.vehicle_id or self.vin:
             return True
-        return bool(self.make and self.model)
+        return bool(self.make or self.model)
 
 
 @dataclass(frozen=True)

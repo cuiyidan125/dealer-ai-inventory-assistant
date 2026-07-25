@@ -115,10 +115,24 @@ def test_insufficient_when_no_make_or_model():
     assert match.status is MatchStatus.INSUFFICIENT
 
 
-def test_insufficient_when_only_make_is_present():
+def test_make_alone_resolves_when_unique():
+    # Only one Ford on the lot — a make alone is enough to resolve it, no full description needed.
     match = resolve_vehicle(ParsedVehicle(make="Ford"), INVENTORY)
-    assert match.status is MatchStatus.INSUFFICIENT
-    assert "model" in match.missing_fields
+    assert match.status is MatchStatus.EXACT
+    assert match.vehicle_id == "V-10003"
+
+
+def test_make_alone_surfaces_candidates_when_several():
+    # Two Toyotas — a make alone narrows the lot to a set the dealer picks from, not a dead end.
+    match = resolve_vehicle(ParsedVehicle(make="Toyota"), INVENTORY)
+    assert match.status is MatchStatus.AMBIGUOUS
+    assert {c["vehicle_id"] for c in match.candidates} == {"V-10001", "V-10007"}
+
+
+def test_model_alone_surfaces_candidates():
+    match = resolve_vehicle(ParsedVehicle(model="RAV4"), INVENTORY)
+    assert match.status is MatchStatus.AMBIGUOUS
+    assert {c["vehicle_id"] for c in match.candidates} == {"V-10001", "V-10007"}
 
 
 # --- trim narrowing -------------------------------------------------------------------

@@ -191,11 +191,12 @@ def test_confidence_recorded_for_extracted_fields():
     assert parsed.field_confidence["make"] == Confidence.HIGH.value
 
 
-def test_has_identity_requires_id_vin_or_make_and_model():
+def test_has_identity_requires_id_vin_or_a_make_or_model():
     assert parse_vehicle("2020 Ford F-150").has_identity()
     assert parse_vehicle("V-10003").has_identity()
-    assert not parse_vehicle("price this vehicle").has_identity()
-    assert not parse_vehicle("a 2020 Ford").has_identity()  # make only
+    assert parse_vehicle("a 2020 Ford").has_identity()      # make alone — enough to list candidates
+    assert parse_vehicle("the RAV4").has_identity()          # model alone — enough to list candidates
+    assert not parse_vehicle("price this vehicle").has_identity()  # neither make nor model
 
 
 # --- execution_allowed on the route --------------------------------------------------

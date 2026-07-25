@@ -13,10 +13,13 @@ Matching priority (most specific first):
 3. year + make + model + trim, unique
 4. year + make + model, unique
 5. make + model, unique  (a unique match is not a guess even without the year)
+6. a partial identity — make alone, or model alone — narrows to whatever it matches
 
-Anything that leaves more than one candidate is AMBIGUOUS. Too little to resolve — no id,
-no VIN, and not both a make and a model — is INSUFFICIENT, which the assistant turns into a
-request for more detail rather than an error.
+Anything that leaves more than one candidate is AMBIGUOUS: the dealer can say just "Toyota" or
+"RAV4" and get the matching vehicles to choose between, rather than being forced to type the
+full description. Too little to resolve — no id, no VIN, and neither a make nor a model — is
+INSUFFICIENT, which the assistant turns into a request for more detail rather than an error. The
+resolver never picks between candidates silently, and never fabricates a vehicle not on the lot.
 """
 
 from __future__ import annotations
@@ -89,19 +92,19 @@ def resolve_vehicle(parsed: ParsedVehicle, inventory: list[dict]) -> MatchResult
                 )
         return MatchResult(MatchStatus.NONE, reason_codes=("NO_SUCH_VIN",))
 
-    # 3–5. structured match. Requires at least a make and a model.
-    if not (parsed.make and parsed.model):
-        missing = tuple(f for f in ("make", "model") if getattr(parsed, f) is None)
+    # 3–6. structured / partial match. A make OR a model is enough — either narrows the lot to
+    # a set the dealer can pick from. Only when neither is present is there nothing to match on.
+    if not (parsed.make or parsed.model):
         return MatchResult(
             MatchStatus.INSUFFICIENT,
-            missing_fields=missing or ("vehicle_id",),
+            missing_fields=("make", "model"),
             reason_codes=("INSUFFICIENT_IDENTITY",),
         )
 
     make_model = [
         v for v in inventory
-        if _norm(v.get("make")) == _norm(parsed.make)
-        and _model_key(v.get("model")) == _model_key(parsed.model)
+        if (parsed.make is None or _norm(v.get("make")) == _norm(parsed.make))
+        and (parsed.model is None or _model_key(v.get("model")) == _model_key(parsed.model))
     ]
 
     if not make_model:
@@ -110,7 +113,11 @@ def resolve_vehicle(parsed: ParsedVehicle, inventory: list[dict]) -> MatchResult
     # Narrow by year, then trim, but never past the point of emptiness — a stated trim that
     # matches nothing should surface the make/model candidates, not a dead end.
     candidates = make_model
-    reason: list[str] = ["MATCHED_MAKE_MODEL"]
+    reason: list[str] = []
+    if parsed.make:
+        reason.append("MATCHED_MAKE")
+    if parsed.model:
+        reason.append("MATCHED_MODEL")
 
     if parsed.year is not None:
         by_year = [v for v in candidates if v.get("year") == parsed.year]
