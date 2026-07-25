@@ -26,3 +26,6 @@ PROMOTION_ICON = "🏷️"
 def configure_page(title: str, icon: str = DEFAULT_ICON) -> None:
     """Configure the page. One call per top-level script execution."""
     st.set_page_config(page_title=title, page_icon=icon, layout=DEFAULT_LAYOUT)
+    # Apply the shared style layer immediately after page config (must follow set_page_config).
+    from pricing_agent.views.style import inject_css
+    inject_css()

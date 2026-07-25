@@ -134,7 +134,8 @@ def test_photo_markup_embeds_rather_than_links():
 def test_photo_fills_the_card_without_distorting_the_vehicle():
     markup = ui.vehicle_photo_html(ui.resolve_image(VEHICLES[0]["image_url"]))
     assert "object-fit:cover" in markup
-    assert "border-radius:10px" in markup
+    assert "border-radius:12px" in markup
+    assert "box-shadow" in markup  # soft card shadow, matching the metric cards
     assert "width:100%" in markup
     assert f"height:{ui.CARD_HEIGHT}px" in markup
     assert "background:transparent" in markup

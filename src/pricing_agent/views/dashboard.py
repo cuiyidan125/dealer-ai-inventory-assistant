@@ -21,6 +21,7 @@ from pricing_agent.mcp_clients import MockTransport, VautoClient
 from pricing_agent.skills.inventory_portfolio import analyze
 from pricing_agent.views import terminology as T
 from pricing_agent.views.glossary import render_glossary
+from pricing_agent.views.style import style_fig
 from pricing_agent.views.workflow_copy import render_workflow_header
 from pricing_agent.workflows.context import WorkflowContext
 
@@ -235,7 +236,7 @@ def render_dashboard(workflow_context: WorkflowContext | None = None) -> None:
             figure.update_layout(
                 height=260, yaxis_title="Revenue, $", margin=dict(t=20, b=10), showlegend=False
             )
-            st.plotly_chart(figure)
+            st.plotly_chart(style_fig(figure))
 
         st.subheader("Inventory age breakdown")
         st.caption("How the lot is distributed across time-on-lot ranges today, and how many "

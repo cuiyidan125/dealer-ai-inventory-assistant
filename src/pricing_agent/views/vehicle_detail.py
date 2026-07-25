@@ -23,6 +23,7 @@ from pricing_agent.policy.price_floor import can_publish
 from pricing_agent.skills.single_vehicle import analyze
 from pricing_agent.views import terminology as T
 from pricing_agent.views.glossary import render_glossary
+from pricing_agent.views.style import style_fig
 from pricing_agent.views.workflow_copy import render_workflow_header
 from pricing_agent.workflows.context import WorkflowContext
 
@@ -122,7 +123,7 @@ def render_vehicle_detail(workflow_context: WorkflowContext | None = None) -> No
                 photo_markup = None
 
         if photo_markup is not None:
-            components.html(photo_markup, height=ui_components.CARD_HEIGHT + 6)
+            components.html(photo_markup, height=ui_components.CARD_HEIGHT + 18)
             st.caption("Merchandising photo")
         else:
             components.html(
@@ -351,7 +352,7 @@ def render_vehicle_detail(workflow_context: WorkflowContext | None = None) -> No
             height=380,
             margin=dict(t=20, b=10),
         )
-        st.plotly_chart(figure)
+        st.plotly_chart(style_fig(figure))
 
         # Decision-ordered columns; every value read from the result (no calculation here).
         table = pd.DataFrame(
@@ -452,7 +453,7 @@ def render_vehicle_detail(workflow_context: WorkflowContext | None = None) -> No
             xaxis_title="Mileage", yaxis_title="Asking price, $", height=360,
             margin=dict(t=20, b=10),
         )
-        st.plotly_chart(comps_figure)
+        st.plotly_chart(style_fig(comps_figure))
 
     st.caption(
         md(

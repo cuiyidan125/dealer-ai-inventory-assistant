@@ -21,3 +21,6 @@ desktop.ini
 # Local runs
 *.log
 .env
+
+# Personal interview deliverables (PPT/Word/screenshots) — never committed
+deliverables/

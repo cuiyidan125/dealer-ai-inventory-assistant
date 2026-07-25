@@ -20,6 +20,7 @@ from datetime import datetime, timezone
 import pandas as pd
 import streamlit as st
 
+import ui_components
 from pricing_agent.mcp_clients import MockTransport, VautoClient
 from pricing_agent.views import improve_aging_copy as copy
 from pricing_agent.views import terminology as T
@@ -116,7 +117,7 @@ def render_improve_aging(workflow_context: WorkflowContext | None = None) -> Non
     _achievability(result)
     _next_steps(result)
     _recommended_plan(result)
-    _vehicles_requiring_action(result)
+    _vehicles_requiring_action(result, facts)
     _vehicles_excluded(result, facts)
     _why_these_vehicles(result)
     _plan_comparison(result)
@@ -354,7 +355,7 @@ def _recommended_plan(result) -> None:
 # --- 5. vehicles requiring action -----------------------------------------------------
 
 
-def _vehicles_requiring_action(result) -> None:
+def _vehicles_requiring_action(result, facts: dict) -> None:
     st.subheader("Analysed aging vehicles")
     evidence_by_id = {e.vehicle_id: e for e in result.vehicle_evidence}
     analysed_ids = set(evidence_by_id)
@@ -384,6 +385,7 @@ def _vehicles_requiring_action(result) -> None:
         action_text = (copy.action_label(a["recommended_action"]) if immediate
                        else "No immediate action — eligible for a sale event")
         rows.append({
+            "Photo": ui_components.thumbnail_uri((facts.get(a["vehicle_id"]) or {}).get("image_url")),
             "Vehicle": ev.description if ev else a["vehicle_id"],
             "Attention": "Immediate action" if immediate else "No immediate action",
             "Recommended action": action_text,
@@ -404,6 +406,7 @@ def _vehicles_requiring_action(result) -> None:
     st.dataframe(
         pd.DataFrame(rows), hide_index=True,
         column_config={
+            "Photo": st.column_config.ImageColumn("Photo", width="small"),
             "Current asking price": st.column_config.NumberColumn(format="$%d"),
             "Break-even price": st.column_config.NumberColumn(format="$%d"),
             "Expected days to sale (P50)": st.column_config.NumberColumn(format="%.0f"),
@@ -441,6 +444,7 @@ def _vehicles_excluded(result, facts: dict) -> None:
     for e in result.selection.exclusions:
         fact = facts.get(e.vehicle_id, {})
         rows.append({
+            "Photo": ui_components.thumbnail_uri(fact.get("image_url")),
             "Vehicle": e.description,
             "Why protected or excluded": "; ".join(copy.exclusion_label(c) for c in e.reason_codes),
             "Days on lot": fact.get("days_in_inventory"),
@@ -449,7 +453,10 @@ def _vehicles_excluded(result, facts: dict) -> None:
         })
     st.dataframe(
         pd.DataFrame(rows), hide_index=True,
-        column_config={"Days on lot": st.column_config.NumberColumn(format="%.0f")},
+        column_config={
+            "Photo": st.column_config.ImageColumn("Photo", width="small"),
+            "Days on lot": st.column_config.NumberColumn(format="%.0f"),
+        },
     )
     with st.expander("View technical reason codes"):
         st.dataframe(
