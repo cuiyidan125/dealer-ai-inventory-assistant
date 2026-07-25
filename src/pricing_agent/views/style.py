@@ -103,3 +103,40 @@ h3 { margin-top: 1.0rem; }
 def inject_css() -> None:
     """Apply the shared style layer. Safe to call once per page, after set_page_config."""
     st.markdown(_CSS, unsafe_allow_html=True)
+
+
+# --- Plotly styling -----------------------------------------------------------------------
+# So charts sit *on* the warm card surfaces instead of punching a white rectangle into them.
+_CHART_INK = "#1E1A17"
+_CHART_MUTED = "#7C6E63"
+_CHART_GRID = "#EBE2DB"
+# Warm colourway, echoing the vAuto orange. Only touches traces that set no explicit colour,
+# so the promotion feasibility bars (green/amber by outcome) keep their own meaning.
+_CHART_COLORWAY = ["#EE5A2A", "#E8A33D", "#C2410C", "#B08968", "#7C6E63"]
+
+_AXIS = dict(
+    gridcolor=_CHART_GRID,
+    linecolor=_CHART_GRID,
+    zerolinecolor="#E0D5CC",
+    tickfont=dict(color=_CHART_MUTED, size=11),
+    title_font=dict(color=_CHART_MUTED, size=12),
+)
+
+
+def style_fig(fig):
+    """Give a Plotly figure the shared warm, transparent look. Returns it for chaining.
+
+    Presentation only — it never changes a trace's data or an explicitly set colour. It clears
+    the canvas to transparent, applies a warm colourway to un-coloured traces, quiets the
+    gridlines, and mutes the axis type. Call right before ``st.plotly_chart``.
+    """
+    fig.update_layout(
+        paper_bgcolor="rgba(0,0,0,0)",
+        plot_bgcolor="rgba(0,0,0,0)",
+        colorway=_CHART_COLORWAY,
+        font=dict(color=_CHART_INK, size=12),
+        legend=dict(font=dict(color=_CHART_MUTED, size=11)),
+    )
+    fig.update_xaxes(**_AXIS)
+    fig.update_yaxes(**_AXIS)
+    return fig

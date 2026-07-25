@@ -149,9 +149,12 @@ def vehicle_photo_html(path: Path, height: int = CARD_HEIGHT) -> str:
     return f"""
 <!DOCTYPE html>
 <html><head><meta charset="utf-8"><style>
-  html,body {{ margin:0; padding:0; background:transparent; }}
-  img {{ width:100%; height:{height}px; object-fit:cover; border-radius:10px;
-         display:block; }}
+  html {{ margin:0; padding:0; background:transparent; }}
+  /* A little inset so the soft shadow has room to fall instead of clipping at the iframe edge. */
+  body {{ margin:0; padding:3px 4px 12px; background:transparent; }}
+  img {{ width:100%; height:{height}px; object-fit:cover; border-radius:12px;
+         display:block; border:1px solid #EBE2DB;
+         box-shadow:0 1px 2px rgba(30,26,23,.04), 0 6px 18px rgba(30,26,23,.10); }}
 </style></head>
 <body><img src="{uri}" alt="Vehicle photograph"></body></html>
 """.strip()

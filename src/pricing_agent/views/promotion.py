@@ -21,6 +21,7 @@ from pricing_agent.mcp_clients import EventClient, MockTransport, VautoClient
 from pricing_agent.skills.promotion_planner import plan_event
 from pricing_agent.views import terminology as T
 from pricing_agent.views.glossary import render_glossary
+from pricing_agent.views.style import style_fig
 from pricing_agent.views.workflow_copy import render_workflow_header
 from pricing_agent.workflows.context import WorkflowContext
 
@@ -230,11 +231,10 @@ def render_promotion_planner(workflow_context: WorkflowContext | None = None) ->
                             zeroline=True, zerolinecolor="rgba(0,0,0,0.28)", row=1, col=ci)
         figure.update_xaxes(tickfont=dict(size=11), row=1, col=ci)
     figure.update_layout(height=300, margin=dict(t=52, b=28, l=6, r=6),
-                         plot_bgcolor="white", paper_bgcolor="white",
-                         font=dict(color="#1E1A17"), uniformtext=dict(minsize=10, mode="show"))
+                         uniformtext=dict(minsize=10, mode="show"))
     for annotation in figure.layout.annotations:  # subplot titles
         annotation.font.size = 13
-    st.plotly_chart(figure, use_container_width=True)
+    st.plotly_chart(style_fig(figure), use_container_width=True)
     st.caption("Each metric has its own scale, so the bars compare the three approaches within "
                "that metric. Balanced ★ is the recommended plan.")
 
