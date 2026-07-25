@@ -197,23 +197,29 @@ def render_assistant_home(
 
 
 def _start_conversation(request: str) -> None:
-    """Run the first turn and, for an aging request, open a fresh conversation around it."""
+    """Run the first turn and open a fresh conversation around any workflow result.
+
+    Every question that produces a structured result — an aging analysis, a valuation, a
+    portfolio forecast, or an event plan — enters the multi-turn thread, so follow-ups and
+    workflow switching are available from any starting point. A clarification or error with no
+    structured result stays on the single-turn path."""
     st.session_state[QUESTION_KEY] = request
     response = run_assistant(request, as_of=AS_OF)
     st.session_state[RESPONSE_KEY] = response
     if response.resolved_vehicle_id:
         st.session_state[SELECTED_VEHICLE_KEY] = response.resolved_vehicle_id
 
-    if response.improve_aging is not None:
+    first_result = response.improve_aging if response.improve_aging is not None else response.result
+    if first_result is not None:
         conversation = new_state()
         conversation.add_user(request)
         conversation.add_assistant(response.message, SOURCE_FIRST_TURN,
-                                   result=response.improve_aging, response=response)
-        conversation.adopt(response)
+                                   result=first_result, response=response)
+        conversation.adopt_response(response)
         st.session_state[CONVERSATION_KEY] = conversation
         _sync_workspace(conversation)
     else:
-        # A non-aging question ends any prior conversation and uses the single-turn path.
+        # No structured result to explore (clarification / no-match / error) — single-turn path.
         st.session_state.pop(CONVERSATION_KEY, None)
         st.session_state.pop("improve_aging_result", None)
 
@@ -238,11 +244,11 @@ def _render_conversation(conversation) -> None:
             if message.role == "user":
                 st.markdown(md(message.text))
             elif message.source == SOURCE_FIRST_TURN and message.response is not None:
-                _render_improve_aging_result(message.response, show_followups=False)
+                _render_workflow_result(message.response)
             elif message.source == SOURCE_SWITCH and message.response is not None:
                 st.caption(_PROVENANCE[SOURCE_SWITCH])
                 st.markdown(md(message.text))
-                _render_switch_result(message.response)
+                _render_workflow_result(message.response)
             else:
                 caption = _PROVENANCE.get(message.source)
                 if caption:
@@ -254,8 +260,9 @@ def _render_conversation(conversation) -> None:
                                         "Open the updated workspace →")
 
 
-def _render_switch_result(response: AssistantResponse) -> None:
-    """Render the switched-to workflow's normal result inside the thread (a valuation for now)."""
+def _render_workflow_result(response: AssistantResponse) -> None:
+    """Render a workflow's normal result inside the thread — used for the first turn and for a
+    later workflow switch. Dispatches on the response's workflow context."""
     if response.workflow is WorkflowContext.PRICE_INVENTORY:
         _render_pricing_result(response)
     elif response.workflow is WorkflowContext.ACQUIRE_INVENTORY:
@@ -268,7 +275,13 @@ def _render_switch_result(response: AssistantResponse) -> None:
 
 def _render_followup_suggestions(conversation) -> None:
     """Clickable, result-relevant follow-ups. Clicking queues the question as a follow-up on the
-    next run; the workspace suggestion is handled by the page link, not a rerun."""
+    next run; the workspace suggestion is handled by the page link, not a rerun.
+
+    The clickable suggestions come from the aging answer model, so they render only for an active
+    aging result. Other workflows still support typed follow-ups via the chat box; they just have
+    no curated suggestion chips yet (Tier-2 work)."""
+    if conversation.active_workflow_type != "IMPROVE_AGING_INVENTORY":
+        return
     answer = build_aging_answer(conversation.active_result,
                                 workspace_url=conversation.active_response.target_url
                                 if conversation.active_response else None)

@@ -206,3 +206,34 @@ def test_detect_flags_pricing_requests(state, text):
 ])
 def test_detect_leaves_aging_followups_alone(state, text):
     assert detect_new_workflow(text, state) is None
+
+
+# --- any workflow (not only aging) seeds a multi-turn conversation ---------------------
+# The assistant home now opens a conversation around any structured result, so every question
+# enters the thread with a follow-up box. These lock that contract at the state-model level (the
+# generic adopter the view calls), independent of Streamlit.
+
+
+def test_a_pricing_first_turn_seeds_a_conversation():
+    s = new_state()
+    r = run_assistant("What should I price 2020 Ford F-150 XLT?", as_of=AS_OF)
+    assert r.improve_aging is None and r.result is not None      # a single-skill valuation
+    s.add_user("What should I price 2020 Ford F-150 XLT?")
+    s.add_assistant(r.message, "first_turn", result=r.result, response=r)
+    s.adopt_response(r)
+    assert s.has_active_result
+    assert s.active_workflow_type == "PRICE_INVENTORY"
+
+
+def test_followup_on_a_non_aging_first_turn_is_honest_not_fabricated():
+    s = new_state()
+    r = run_assistant("What should I price 2020 Ford F-150 XLT?", as_of=AS_OF)
+    s.add_user("q")
+    s.add_assistant(r.message, "first_turn", result=r.result, response=r)
+    s.adopt_response(r)
+    result = handle_followup("Why protect profit?", s, as_of=AS_OF)
+    # Non-aging results have no rich follow-up engine yet: the reply is an honest clarification,
+    # never a fabricated aging-style answer, and it never reran a workflow.
+    assert result.kind == "clarification"
+    assert "Single Vehicle Valuation" in result.text
+    assert not result.reran
