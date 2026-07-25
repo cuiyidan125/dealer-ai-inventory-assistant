@@ -247,9 +247,10 @@ def test_named_but_unresolvable_event_needs_clarification():
 
 
 def test_unrealistic_target_returns_target_not_achievable():
-    # With the forward-looking 2026-08-17 window the canonical 70% target is now AT_RISK, so a
-    # tighter 60% target is used to exercise the not-achievable state. Selection is identical.
-    result = run(**{**SUMMER, "target_utilization": 0.60})
+    # On the 20-car lot the canonical 70% target is achievable, so a much tighter 55% target
+    # (which would require selling far more units than the window allows) exercises the
+    # not-achievable state. Selection is identical.
+    result = run(**{**SUMMER, "target_utilization": 0.55})
     assert result.state is WorkflowState.TARGET_NOT_ACHIEVABLE
     assert result.promotion_result["feasibility"]["status"] == "NOT_ACHIEVABLE"
     # Full evidence is still present.

@@ -417,38 +417,6 @@ def render_vehicle_detail(workflow_context: WorkflowContext | None = None) -> No
         st.metric(T.metric("max_safe_discount"), f"${headroom['max_safe_discount']:,.0f}")
         st.caption("Safe room for an additional discount before crossing the safety boundary.")
 
-    # --- discount ladder --------------------------------------------------------------
-
-    if headroom["ladder"]:
-        st.subheader("How price reductions affect value")
-        st.caption(
-            "See how additional price reductions change expected total economic value and "
-            "financial safety. The best point is found by running the simulation, not by a "
-            "formula — it depends on this vehicle's holding cost and depreciation."
-        )
-        ladder = pd.DataFrame(headroom["ladder"])
-        ladder_figure = go.Figure()
-        ladder_figure.add_trace(
-            go.Scatter(
-                x=ladder["discount"],
-                y=ladder["p50_net_economic_value"],
-                mode="lines+markers",
-                name="Expected total economic value (P50)",
-            )
-        )
-        ladder_figure.add_vline(
-            x=headroom["economically_sensible_discount"],
-            line_dash="dash",
-            annotation_text=f"Best point ${headroom['economically_sensible_discount']:,.0f}",
-        )
-        ladder_figure.update_layout(
-            xaxis_title="Discount off asking price, $",
-            yaxis_title="Expected total economic value (P50), $",
-            height=320,
-            margin=dict(t=20, b=10),
-        )
-        st.plotly_chart(ladder_figure)
-
     # --- comparables ------------------------------------------------------------------
 
     st.subheader("Comparable vehicles")

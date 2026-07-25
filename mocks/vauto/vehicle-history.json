@@ -1,35 +1,433 @@
 {
   "data": {
-    "_note": "Backs get_vehicle_price_history (§9.5) and get_vehicle_inventory_age (§9.6). Kept in one fixture because both are derived from the same acquisition and merchandising record; the mock client exposes them as two separate tools per the contract.",
-
+    "_note": "Backs get_vehicle_price_history (\u00a79.5) and get_vehicle_inventory_age (\u00a79.6). Kept in one fixture because both are derived from the same acquisition and merchandising record; the mock client exposes them as two separate tools per the contract.",
     "price_history": {
-      "V-10001": { "original_list_price": 29495, "current_list_price": 28995, "cumulative_markdown": 500,  "price_changes": [ { "date": "2026-07-06", "from": 29495, "to": 28995, "reason": "AGING" } ], "campaign_participation": [] },
-      "V-10002": { "original_list_price": 26495, "current_list_price": 26495, "cumulative_markdown": 0,    "price_changes": [], "campaign_participation": [] },
-      "V-10003": { "original_list_price": 33995, "current_list_price": 32995, "cumulative_markdown": 1000, "price_changes": [ { "date": "2026-06-28", "from": 33995, "to": 32995, "reason": "MARKET" } ], "campaign_participation": [] },
-      "V-10004": { "original_list_price": 17495, "current_list_price": 15995, "cumulative_markdown": 1500, "price_changes": [ { "date": "2026-05-20", "from": 17495, "to": 16495, "reason": "AGING" }, { "date": "2026-06-24", "from": 16495, "to": 15995, "reason": "AGING" } ], "campaign_participation": [] },
-      "V-10005": { "original_list_price": 27995, "current_list_price": 24995, "cumulative_markdown": 3000, "price_changes": [ { "date": "2026-05-15", "from": 27995, "to": 26495, "reason": "AGING" }, { "date": "2026-06-20", "from": 26495, "to": 24995, "reason": "AGING" } ], "campaign_participation": [] },
-      "V-10006": { "original_list_price": 22995, "current_list_price": 21995, "cumulative_markdown": 1000, "price_changes": [ { "date": "2026-06-30", "from": 22995, "to": 21995, "reason": "DEPRECIATION" } ], "campaign_participation": [] },
-      "V-10007": { "original_list_price": 29495, "current_list_price": 29495, "cumulative_markdown": 0,    "price_changes": [], "campaign_participation": [] },
-      "V-10008": { "original_list_price": 27995, "current_list_price": 27995, "cumulative_markdown": 0,    "price_changes": [], "campaign_participation": [] },
-      "V-10009": { "original_list_price": 23995, "current_list_price": 23995, "cumulative_markdown": 0,    "price_changes": [], "campaign_participation": [] },
-      "V-10010": { "original_list_price": 37995, "current_list_price": 36995, "cumulative_markdown": 1000, "price_changes": [ { "date": "2026-07-12", "from": 37995, "to": 36995, "reason": "MARKET" } ], "campaign_participation": [] },
-      "V-10011": { "original_list_price": 20995, "current_list_price": 19495, "cumulative_markdown": 1500, "price_changes": [ { "date": "2026-06-05", "from": 20995, "to": 19995, "reason": "CAMPAIGN" }, { "date": "2026-06-26", "from": 19995, "to": 19495, "reason": "AGING" } ], "campaign_participation": ["CAMP-JUNE-2026"] },
-      "V-10012": { "original_list_price": 31995, "current_list_price": 28495, "cumulative_markdown": 3500, "price_changes": [ { "date": "2026-04-24", "from": 31995, "to": 30495, "reason": "AGING" }, { "date": "2026-05-29", "from": 30495, "to": 29495, "reason": "AGING" }, { "date": "2026-07-01", "from": 29495, "to": 28495, "reason": "AGING" } ], "campaign_participation": [] }
+      "V-10001": {
+        "original_list_price": 29495,
+        "current_list_price": 28995,
+        "cumulative_markdown": 500,
+        "price_changes": [
+          {
+            "date": "2026-07-06",
+            "from": 29495,
+            "to": 28995,
+            "reason": "AGING"
+          }
+        ],
+        "campaign_participation": []
+      },
+      "V-10002": {
+        "original_list_price": 26495,
+        "current_list_price": 26495,
+        "cumulative_markdown": 0,
+        "price_changes": [],
+        "campaign_participation": []
+      },
+      "V-10003": {
+        "original_list_price": 33995,
+        "current_list_price": 32995,
+        "cumulative_markdown": 1000,
+        "price_changes": [
+          {
+            "date": "2026-06-28",
+            "from": 33995,
+            "to": 32995,
+            "reason": "MARKET"
+          }
+        ],
+        "campaign_participation": []
+      },
+      "V-10004": {
+        "original_list_price": 17495,
+        "current_list_price": 15995,
+        "cumulative_markdown": 1500,
+        "price_changes": [
+          {
+            "date": "2026-05-20",
+            "from": 17495,
+            "to": 16495,
+            "reason": "AGING"
+          },
+          {
+            "date": "2026-06-24",
+            "from": 16495,
+            "to": 15995,
+            "reason": "AGING"
+          }
+        ],
+        "campaign_participation": []
+      },
+      "V-10005": {
+        "original_list_price": 27995,
+        "current_list_price": 24995,
+        "cumulative_markdown": 3000,
+        "price_changes": [
+          {
+            "date": "2026-05-15",
+            "from": 27995,
+            "to": 26495,
+            "reason": "AGING"
+          },
+          {
+            "date": "2026-06-20",
+            "from": 26495,
+            "to": 24995,
+            "reason": "AGING"
+          }
+        ],
+        "campaign_participation": []
+      },
+      "V-10006": {
+        "original_list_price": 22995,
+        "current_list_price": 21995,
+        "cumulative_markdown": 1000,
+        "price_changes": [
+          {
+            "date": "2026-06-30",
+            "from": 22995,
+            "to": 21995,
+            "reason": "DEPRECIATION"
+          }
+        ],
+        "campaign_participation": []
+      },
+      "V-10007": {
+        "original_list_price": 29495,
+        "current_list_price": 29495,
+        "cumulative_markdown": 0,
+        "price_changes": [],
+        "campaign_participation": []
+      },
+      "V-10008": {
+        "original_list_price": 27995,
+        "current_list_price": 27995,
+        "cumulative_markdown": 0,
+        "price_changes": [],
+        "campaign_participation": []
+      },
+      "V-10009": {
+        "original_list_price": 23995,
+        "current_list_price": 23995,
+        "cumulative_markdown": 0,
+        "price_changes": [],
+        "campaign_participation": []
+      },
+      "V-10010": {
+        "original_list_price": 37995,
+        "current_list_price": 36995,
+        "cumulative_markdown": 1000,
+        "price_changes": [
+          {
+            "date": "2026-07-12",
+            "from": 37995,
+            "to": 36995,
+            "reason": "MARKET"
+          }
+        ],
+        "campaign_participation": []
+      },
+      "V-10011": {
+        "original_list_price": 20995,
+        "current_list_price": 19495,
+        "cumulative_markdown": 1500,
+        "price_changes": [
+          {
+            "date": "2026-06-05",
+            "from": 20995,
+            "to": 19995,
+            "reason": "CAMPAIGN"
+          },
+          {
+            "date": "2026-06-26",
+            "from": 19995,
+            "to": 19495,
+            "reason": "AGING"
+          }
+        ],
+        "campaign_participation": [
+          "CAMP-JUNE-2026"
+        ]
+      },
+      "V-10012": {
+        "original_list_price": 31995,
+        "current_list_price": 28495,
+        "cumulative_markdown": 3500,
+        "price_changes": [
+          {
+            "date": "2026-04-24",
+            "from": 31995,
+            "to": 30495,
+            "reason": "AGING"
+          },
+          {
+            "date": "2026-05-29",
+            "from": 30495,
+            "to": 29495,
+            "reason": "AGING"
+          },
+          {
+            "date": "2026-07-01",
+            "from": 29495,
+            "to": 28495,
+            "reason": "AGING"
+          }
+        ],
+        "campaign_participation": []
+      },
+      "V-10013": {
+        "original_list_price": 35995,
+        "current_list_price": 34995,
+        "cumulative_markdown": 1000,
+        "price_changes": [
+          {
+            "date": "2026-04-27",
+            "from": 35995,
+            "to": 34995,
+            "reason": "AGING"
+          }
+        ],
+        "campaign_participation": []
+      },
+      "V-10014": {
+        "original_list_price": 30995,
+        "current_list_price": 29995,
+        "cumulative_markdown": 1000,
+        "price_changes": [
+          {
+            "date": "2026-04-21",
+            "from": 30995,
+            "to": 29995,
+            "reason": "AGING"
+          }
+        ],
+        "campaign_participation": []
+      },
+      "V-10015": {
+        "original_list_price": 34995,
+        "current_list_price": 33995,
+        "cumulative_markdown": 1000,
+        "price_changes": [
+          {
+            "date": "2026-04-29",
+            "from": 34995,
+            "to": 33995,
+            "reason": "AGING"
+          }
+        ],
+        "campaign_participation": []
+      },
+      "V-10016": {
+        "original_list_price": 27995,
+        "current_list_price": 26995,
+        "cumulative_markdown": 1000,
+        "price_changes": [
+          {
+            "date": "2026-04-13",
+            "from": 27995,
+            "to": 26995,
+            "reason": "AGING"
+          }
+        ],
+        "campaign_participation": []
+      },
+      "V-10017": {
+        "original_list_price": 28495,
+        "current_list_price": 27495,
+        "cumulative_markdown": 1000,
+        "price_changes": [
+          {
+            "date": "2026-05-03",
+            "from": 28495,
+            "to": 27495,
+            "reason": "AGING"
+          }
+        ],
+        "campaign_participation": []
+      },
+      "V-10018": {
+        "original_list_price": 29495,
+        "current_list_price": 28495,
+        "cumulative_markdown": 1000,
+        "price_changes": [
+          {
+            "date": "2026-06-24",
+            "from": 29495,
+            "to": 28495,
+            "reason": "AGING"
+          }
+        ],
+        "campaign_participation": []
+      },
+      "V-10019": {
+        "original_list_price": 32995,
+        "current_list_price": 31995,
+        "cumulative_markdown": 1000,
+        "price_changes": [
+          {
+            "date": "2026-04-04",
+            "from": 32995,
+            "to": 31995,
+            "reason": "AGING"
+          }
+        ],
+        "campaign_participation": []
+      },
+      "V-10020": {
+        "original_list_price": 26995,
+        "current_list_price": 25995,
+        "cumulative_markdown": 1000,
+        "price_changes": [
+          {
+            "date": "2026-06-06",
+            "from": 26995,
+            "to": 25995,
+            "reason": "AGING"
+          }
+        ],
+        "campaign_participation": []
+      }
     },
-
     "inventory_age": {
-      "V-10001": { "days_in_inventory": 37,  "acquisition_date": "2026-06-14", "merchandising_start_date": "2026-06-19", "aging_bucket": "31_60",   "aging_status": "NORMAL" },
-      "V-10002": { "days_in_inventory": 44,  "acquisition_date": "2026-06-07", "merchandising_start_date": "2026-06-11", "aging_bucket": "31_60",   "aging_status": "NORMAL" },
-      "V-10003": { "days_in_inventory": 51,  "acquisition_date": "2026-05-31", "merchandising_start_date": "2026-06-04", "aging_bucket": "31_60",   "aging_status": "WATCH" },
-      "V-10004": { "days_in_inventory": 96,  "acquisition_date": "2026-04-16", "merchandising_start_date": "2026-04-21", "aging_bucket": "91_120",  "aging_status": "AGED" },
-      "V-10005": { "days_in_inventory": 108, "acquisition_date": "2026-04-04", "merchandising_start_date": "2026-04-12", "aging_bucket": "91_120",  "aging_status": "AGED" },
-      "V-10006": { "days_in_inventory": 62,  "acquisition_date": "2026-05-20", "merchandising_start_date": "2026-05-24", "aging_bucket": "61_90",   "aging_status": "WATCH" },
-      "V-10007": { "days_in_inventory": 29,  "acquisition_date": "2026-06-22", "merchandising_start_date": "2026-06-26", "aging_bucket": "0_30",    "aging_status": "FRESH" },
-      "V-10008": { "days_in_inventory": 33,  "acquisition_date": "2026-06-18", "merchandising_start_date": "2026-06-21", "aging_bucket": "31_60",   "aging_status": "NORMAL" },
-      "V-10009": { "days_in_inventory": 41,  "acquisition_date": "2026-06-10", "merchandising_start_date": "2026-06-15", "aging_bucket": "31_60",   "aging_status": "NORMAL" },
-      "V-10010": { "days_in_inventory": 26,  "acquisition_date": "2026-06-25", "merchandising_start_date": "2026-06-29", "aging_bucket": "0_30",    "aging_status": "FRESH" },
-      "V-10011": { "days_in_inventory": 73,  "acquisition_date": "2026-05-09", "merchandising_start_date": "2026-05-13", "aging_bucket": "61_90",   "aging_status": "AGED" },
-      "V-10012": { "days_in_inventory": 130, "acquisition_date": "2026-03-13", "merchandising_start_date": "2026-03-18", "aging_bucket": "121_PLUS","aging_status": "CRITICAL" }
+      "V-10001": {
+        "days_in_inventory": 37,
+        "acquisition_date": "2026-06-14",
+        "merchandising_start_date": "2026-06-19",
+        "aging_bucket": "31_60",
+        "aging_status": "NORMAL"
+      },
+      "V-10002": {
+        "days_in_inventory": 44,
+        "acquisition_date": "2026-06-07",
+        "merchandising_start_date": "2026-06-11",
+        "aging_bucket": "31_60",
+        "aging_status": "NORMAL"
+      },
+      "V-10003": {
+        "days_in_inventory": 51,
+        "acquisition_date": "2026-05-31",
+        "merchandising_start_date": "2026-06-04",
+        "aging_bucket": "31_60",
+        "aging_status": "WATCH"
+      },
+      "V-10004": {
+        "days_in_inventory": 96,
+        "acquisition_date": "2026-04-16",
+        "merchandising_start_date": "2026-04-21",
+        "aging_bucket": "91_120",
+        "aging_status": "AGED"
+      },
+      "V-10005": {
+        "days_in_inventory": 108,
+        "acquisition_date": "2026-04-04",
+        "merchandising_start_date": "2026-04-12",
+        "aging_bucket": "91_120",
+        "aging_status": "AGED"
+      },
+      "V-10006": {
+        "days_in_inventory": 62,
+        "acquisition_date": "2026-05-20",
+        "merchandising_start_date": "2026-05-24",
+        "aging_bucket": "61_90",
+        "aging_status": "WATCH"
+      },
+      "V-10007": {
+        "days_in_inventory": 29,
+        "acquisition_date": "2026-06-22",
+        "merchandising_start_date": "2026-06-26",
+        "aging_bucket": "0_30",
+        "aging_status": "FRESH"
+      },
+      "V-10008": {
+        "days_in_inventory": 33,
+        "acquisition_date": "2026-06-18",
+        "merchandising_start_date": "2026-06-21",
+        "aging_bucket": "31_60",
+        "aging_status": "NORMAL"
+      },
+      "V-10009": {
+        "days_in_inventory": 41,
+        "acquisition_date": "2026-06-10",
+        "merchandising_start_date": "2026-06-15",
+        "aging_bucket": "31_60",
+        "aging_status": "NORMAL"
+      },
+      "V-10010": {
+        "days_in_inventory": 26,
+        "acquisition_date": "2026-06-25",
+        "merchandising_start_date": "2026-06-29",
+        "aging_bucket": "0_30",
+        "aging_status": "FRESH"
+      },
+      "V-10011": {
+        "days_in_inventory": 73,
+        "acquisition_date": "2026-05-09",
+        "merchandising_start_date": "2026-05-13",
+        "aging_bucket": "61_90",
+        "aging_status": "AGED"
+      },
+      "V-10012": {
+        "days_in_inventory": 130,
+        "acquisition_date": "2026-03-13",
+        "merchandising_start_date": "2026-03-18",
+        "aging_bucket": "121_PLUS",
+        "aging_status": "CRITICAL"
+      },
+      "V-10013": {
+        "days_in_inventory": 98,
+        "acquisition_date": "2026-04-22",
+        "merchandising_start_date": "2026-04-27",
+        "aging_bucket": "91_120",
+        "aging_status": "AGING"
+      },
+      "V-10014": {
+        "days_in_inventory": 104,
+        "acquisition_date": "2026-04-16",
+        "merchandising_start_date": "2026-04-21",
+        "aging_bucket": "91_120",
+        "aging_status": "AGING"
+      },
+      "V-10015": {
+        "days_in_inventory": 96,
+        "acquisition_date": "2026-04-24",
+        "merchandising_start_date": "2026-04-29",
+        "aging_bucket": "91_120",
+        "aging_status": "AGING"
+      },
+      "V-10016": {
+        "days_in_inventory": 112,
+        "acquisition_date": "2026-04-08",
+        "merchandising_start_date": "2026-04-13",
+        "aging_bucket": "91_120",
+        "aging_status": "AGING"
+      },
+      "V-10017": {
+        "days_in_inventory": 92,
+        "acquisition_date": "2026-04-28",
+        "merchandising_start_date": "2026-05-03",
+        "aging_bucket": "91_120",
+        "aging_status": "AGING"
+      },
+      "V-10018": {
+        "days_in_inventory": 40,
+        "acquisition_date": "2026-06-19",
+        "merchandising_start_date": "2026-06-24",
+        "aging_bucket": "31_60",
+        "aging_status": "NORMAL"
+      },
+      "V-10019": {
+        "days_in_inventory": 121,
+        "acquisition_date": "2026-03-30",
+        "merchandising_start_date": "2026-04-04",
+        "aging_bucket": "over_120",
+        "aging_status": "CRITICAL"
+      },
+      "V-10020": {
+        "days_in_inventory": 58,
+        "acquisition_date": "2026-06-01",
+        "merchandising_start_date": "2026-06-06",
+        "aging_bucket": "31_60",
+        "aging_status": "NORMAL"
+      }
     }
   },
   "meta": {

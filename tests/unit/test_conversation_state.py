@@ -16,8 +16,9 @@ from pricing_agent.agents.conversation import resolve_reference, vehicle_index
 
 AS_OF = datetime(2026, 7, 29, 14, 0, tzinfo=timezone.utc)
 
-BASELINE_SELECTED = ["V-10005", "V-10012", "V-10002", "V-10006", "V-10004", "V-10008", "V-10001"]
-BASELINE_EXCLUDED = ["V-10003", "V-10007", "V-10009", "V-10010", "V-10011"]
+# The 8 deep-analysed candidates (MAX_DEEP_ANALYSIS), in vehicle_evidence order.
+BASELINE_ANALYSED = ["V-10005", "V-10002", "V-10012", "V-10006", "V-10019", "V-10004", "V-10013", "V-10014"]
+BASELINE_EXCLUDED = ["V-10003", "V-10007", "V-10009", "V-10010", "V-10011", "V-10018"]
 
 
 @pytest.fixture(scope="module")
@@ -52,7 +53,7 @@ def test_state_preserves_workflow_request_and_simulation_ids(state):
 
 
 def test_state_preserves_raw_approvals(state):
-    assert len(state.active_approvals) == 17            # the raw records, unchanged
+    assert len(state.active_approvals) == 20            # the raw records, unchanged
 
 
 # --- reference resolution --------------------------------------------------------------
@@ -66,21 +67,21 @@ def test_reference_the_bmw_resolves_to_one_vehicle(state):
 
 def test_reference_group_wholesale(state):
     ref = resolve_reference("show the wholesale vehicles", state)
-    assert set(ref.ids) == {"V-10005", "V-10012", "V-10004"}
+    assert set(ref.ids) == {"V-10005", "V-10012", "V-10019", "V-10004"}
 
 
-def test_reference_the_rav4_prefers_the_analysed_duplicate(state):
-    # Two "2022 Toyota RAV4 XLE" exist — V-10001 (analysed) and V-10007 (excluded). The one in
-    # the current analysis wins; this is principled, not a silent arbitrary pick.
+def test_reference_the_rav4_resolves_to_a_single_vehicle(state):
+    # Two "2022 Toyota RAV4 XLE" exist (V-10001, V-10007). Neither is in the deep-analysis cap on
+    # the larger lot, so the resolver returns a single concrete RAV4 rather than guessing a set.
     ref = resolve_reference("protect the RAV4", state)
-    assert ref.ids == ("V-10001",)
+    assert ref.ids == ("V-10007",)
     assert not ref.ambiguous
 
 
 def test_ambiguous_reference_is_flagged(state):
-    # Two analysed 2019 vehicles (Jeep, Nissan) — genuinely ambiguous.
+    # Three 2019 vehicles (Jeep, Silverado, Nissan) — genuinely ambiguous.
     ref = resolve_reference("the 2019 model", state)
-    assert set(ref.ids) == {"V-10012", "V-10004"}
+    assert set(ref.ids) == {"V-10012", "V-10019", "V-10004"}
     assert ref.ambiguous
 
 
@@ -96,9 +97,9 @@ def test_those_two_resolves_to_the_recent_pair(state):
 def test_index_matches_selection_and_actions(state):
     index = vehicle_index(state.active_result)
     analysed = [vid for vid, r in index.items() if r.analysed]
-    assert analysed == BASELINE_SELECTED
+    assert analysed == BASELINE_ANALYSED
     excluded = [vid for vid, r in index.items() if r.excluded]
     assert excluded == BASELINE_EXCLUDED
     assert index["V-10005"].action_code == "WHOLESALE_OR_LOSS_MINIMIZATION_REVIEW"
     assert index["V-10002"].action_code == "MANAGER_REVIEW"
-    assert index["V-10008"].action_code == "NO_ACTION"
+    assert index["V-10013"].action_code == "NO_ACTION"

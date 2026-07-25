@@ -205,6 +205,7 @@ METRIC: dict[str, dict[str, str]] = {
     "required_reduction": {"label": "Vehicles to sell or release"},
     "dealer_funded": {"label": "Dealer-funded discount"},
     "gross_impact_p50": {"label": "Expected gross impact (P50)"},
+    "total_front_end_gross_p50": {"label": "Expected total front-end gross (P50)"},
     "holding_savings_p50": {"label": "Expected holding-cost savings (P50)"},
     "depreciation_savings_p50": {"label": "Expected depreciation savings (P50)"},
     "approvals_required": {"label": "Manager reviews required"},

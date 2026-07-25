@@ -30,21 +30,31 @@ def _inventory() -> list[dict]:
 VEHICLES = _inventory()
 IDS = [v["vehicle_id"] for v in VEHICLES]
 
+# Every demo unit now carries a sourced, licensed photograph (Wikimedia Commons, CC0/CC BY-SA).
+# The silhouette fallback remains available for any vehicle without a usable image_url; it is
+# exercised directly by the fallback tests below rather than by a fixture with no photo.
+PHOTO_VEHICLES = [v for v in VEHICLES if v.get("image_url")]
+PHOTO_IDS = [v["vehicle_id"] for v in PHOTO_VEHICLES]
+SILHOUETTE_VEHICLES = [v for v in VEHICLES if not v.get("image_url")]
+SILHOUETTE_IDS = [v["vehicle_id"] for v in SILHOUETTE_VEHICLES]
+
 
 # --- every demo vehicle has a working image -------------------------------------------
 
 
 def test_the_demo_fleet_is_the_expected_size():
-    assert len(VEHICLES) == 12
+    assert len(VEHICLES) == 20
+    assert len(PHOTO_VEHICLES) == 20       # every unit carries a sourced photograph
+    assert len(SILHOUETTE_VEHICLES) == 0   # no unit relies on the silhouette fallback
 
 
-@pytest.mark.parametrize("vehicle", VEHICLES, ids=IDS)
+@pytest.mark.parametrize("vehicle", PHOTO_VEHICLES, ids=PHOTO_IDS)
 def test_every_vehicle_has_a_non_empty_image_url(vehicle):
     assert vehicle.get("image_url"), f"{vehicle['vehicle_id']} has no image_url"
     assert vehicle["image_url"].startswith("assets/vehicles/")
 
 
-@pytest.mark.parametrize("vehicle", VEHICLES, ids=IDS)
+@pytest.mark.parametrize("vehicle", PHOTO_VEHICLES, ids=PHOTO_IDS)
 def test_every_referenced_file_exists_and_is_a_real_image(vehicle):
     path = ui.resolve_image(vehicle["image_url"])
     assert path is not None, f"{vehicle['image_url']} did not resolve"
@@ -53,7 +63,7 @@ def test_every_referenced_file_exists_and_is_a_real_image(vehicle):
     assert path.read_bytes()[:3] == b"\xff\xd8\xff", "not a JPEG"
 
 
-@pytest.mark.parametrize("vehicle", VEHICLES, ids=IDS)
+@pytest.mark.parametrize("vehicle", PHOTO_VEHICLES, ids=PHOTO_IDS)
 def test_every_vehicle_renders_a_photo_not_a_silhouette(vehicle):
     markup = ui.vehicle_photo_html(ui.resolve_image(vehicle["image_url"]))
     assert "data:image/jpeg;base64," in markup
@@ -62,7 +72,7 @@ def test_every_vehicle_renders_a_photo_not_a_silhouette(vehicle):
 
 def test_every_asset_on_disk_is_referenced_by_a_vehicle():
     """Catches images left behind after a swap, which would bloat the repo silently."""
-    referenced = {v["image_url"].rsplit("/", 1)[-1] for v in VEHICLES}
+    referenced = {v["image_url"].rsplit("/", 1)[-1] for v in PHOTO_VEHICLES}
     on_disk = {p.name for p in ASSETS.glob("*.jpg")}
     assert on_disk == referenced, f"orphaned: {sorted(on_disk - referenced)}"
 
@@ -152,7 +162,7 @@ def test_thumbnails_are_cached_by_path():
 
 def test_attribution_covers_every_vehicle_and_file():
     text = (ASSETS / "ATTRIBUTION.md").read_text(encoding="utf-8")
-    for vehicle in VEHICLES:
+    for vehicle in PHOTO_VEHICLES:
         assert vehicle["vehicle_id"] in text, f"no attribution entry for {vehicle['vehicle_id']}"
         assert vehicle["image_url"].rsplit("/", 1)[-1] in text
     for required in ("Source website", "Licence", "Creator", "commons.wikimedia.org"):

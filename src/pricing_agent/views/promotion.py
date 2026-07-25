@@ -82,7 +82,7 @@ def render_promotion_planner(workflow_context: WorkflowContext | None = None) ->
     event_id = labels[choice]
     # Whole percent: Streamlit's "%%" format does not scale, so a 0.70 float slider would
     # render as "1%".
-    target_pct = st.sidebar.slider("Target utilization", 40, 100, 70, 5, format="%d%%")
+    target_pct = st.sidebar.slider("Target utilization", 40, 100, 75, 5, format="%d%%")
     target = target_pct / 100.0
 
     with st.spinner("Planning…"):
@@ -185,8 +185,8 @@ def render_promotion_planner(workflow_context: WorkflowContext | None = None) ->
                 delta_color="off",
             )
             st.metric(
-                "Expected gross impact (P50)",
-                f"${outcomes['gross_impact']['p50']:,.0f}",
+                "Expected total front-end gross (P50)",
+                f"${outcomes['total_front_end_gross']['p50']:,.0f}",
                 delta_color="off",
             )
             st.metric("Likelihood of reaching the target", f"{outcomes['probability_target_achieved']:.0%}")
@@ -210,11 +210,11 @@ def render_promotion_planner(workflow_context: WorkflowContext | None = None) ->
     x_labels = ["Profit<br>protection", "Balanced ★", "Free<br>space"]
     bar_colors = ["#7A8CA6", "#EE5A2A", "#E8A13C"]  # recommended (Balanced) in vAuto orange
     add_sales = [plans[p]["outcomes"]["incremental_units_sold"]["mean"] for p in order]
-    gross = [plans[p]["outcomes"]["gross_impact"]["p50"] for p in order]
+    gross = [plans[p]["outcomes"]["total_front_end_gross"]["p50"] for p in order]
     likely = [plans[p]["outcomes"]["probability_target_achieved"] * 100.0 for p in order]
     panels = [
         ("Additional sales (avg units)", add_sales, [f"{v:.2f}" for v in add_sales]),
-        ("Gross impact (P50)", gross, [f"${v:,.0f}" for v in gross]),
+        ("Total front-end gross (P50)", gross, [f"${v:,.0f}" for v in gross]),
         ("Target likelihood", likely, [f"{v:.0f}%" for v in likely]),
     ]
     figure = make_subplots(rows=1, cols=3, subplot_titles=[p[0] for p in panels],

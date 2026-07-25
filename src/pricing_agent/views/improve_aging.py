@@ -331,7 +331,7 @@ def _recommended_plan(result) -> None:
     c[0].metric("Expected ending inventory (P50)", f"{o['ending_inventory']['p50']:.0f}",
                 f"lot capacity used {_pct(o['ending_utilization']['p50'])}", delta_color="off")
     c[1].metric("Likelihood of reaching the target", _pct(o["probability_target_achieved"]))
-    c[2].metric("Expected gross impact (P50)", _usd(o["gross_impact"]["p50"]))
+    c[2].metric("Expected total front-end gross (P50)", _usd(o["total_front_end_gross"]["p50"]))
     rc = reconciled_counts(result)
     # Vehicle-based by default; the raw review-condition count lives in "View approval details".
     c[3].metric("Vehicles requiring review", rc["review_vehicles"])

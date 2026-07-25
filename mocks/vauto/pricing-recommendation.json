@@ -1,20 +1,248 @@
 {
   "data": {
     "recommendations": {
-      "V-10001": { "recommended_price": 28400, "recommended_range": { "low": 27600, "high": 29300 }, "source_methodology": "VAUTO_MARKET_INDEX_V4", "market_position": "AT_MARKET", "confidence": "HIGH", "effective_date": "2026-07-21", "service_version": "4.2.1" },
-      "V-10002": { "recommended_price": 24100, "recommended_range": { "low": 23400, "high": 24900 }, "source_methodology": "VAUTO_MARKET_INDEX_V4", "market_position": "ABOVE_MARKET", "confidence": "HIGH", "effective_date": "2026-07-21", "service_version": "4.2.1" },
-      "V-10003": { "recommended_price": 32200, "recommended_range": { "low": 31100, "high": 33400 }, "source_methodology": "VAUTO_MARKET_INDEX_V4", "market_position": "AT_MARKET", "confidence": "MEDIUM", "effective_date": "2026-07-21", "service_version": "4.2.1" },
-      "V-10004": { "recommended_price": 15100, "recommended_range": { "low": 14400, "high": 15800 }, "source_methodology": "VAUTO_MARKET_INDEX_V4", "market_position": "ABOVE_MARKET", "confidence": "MEDIUM", "effective_date": "2026-07-21", "service_version": "4.2.1" },
-      "V-10005": { "recommended_price": 24900, "recommended_range": { "low": 23600, "high": 26200 }, "source_methodology": "VAUTO_MARKET_INDEX_V4", "market_position": "AT_MARKET", "confidence": "MEDIUM", "effective_date": "2026-07-21", "service_version": "4.2.1" },
-      "V-10006": { "recommended_price": 21400, "recommended_range": { "low": 20300, "high": 22500 }, "source_methodology": "VAUTO_MARKET_INDEX_V4", "market_position": "AT_MARKET", "confidence": "MEDIUM", "effective_date": "2026-07-21", "service_version": "4.2.1" },
-      "V-10007": { "recommended_price": 29000, "recommended_range": { "low": 28200, "high": 29900 }, "source_methodology": "VAUTO_MARKET_INDEX_V4", "market_position": "AT_MARKET", "confidence": "HIGH", "effective_date": "2026-07-21", "service_version": "4.2.1" },
-      "V-10008": { "recommended_price": 26900, "recommended_range": { "low": 26100, "high": 27800 }, "source_methodology": "VAUTO_MARKET_INDEX_V4", "market_position": "ABOVE_MARKET", "confidence": "HIGH", "effective_date": "2026-07-21", "service_version": "4.2.1" },
-      "V-10009": { "recommended_price": 23200, "recommended_range": { "low": 21300, "high": 25100 }, "source_methodology": "VAUTO_MARKET_INDEX_V4", "market_position": "AT_MARKET", "confidence": "LOW", "effective_date": "2026-07-21", "service_version": "4.2.1" },
-      "V-10010": { "recommended_price": 36000, "recommended_range": { "low": 35000, "high": 37100 }, "source_methodology": "VAUTO_MARKET_INDEX_V4", "market_position": "AT_MARKET", "confidence": "MEDIUM", "effective_date": "2026-07-18", "service_version": "4.2.1" },
-      "V-10011": { "recommended_price": 19000, "recommended_range": { "low": 18400, "high": 19700 }, "source_methodology": "VAUTO_MARKET_INDEX_V4", "market_position": "AT_MARKET", "confidence": "HIGH", "effective_date": "2026-07-21", "service_version": "4.2.1" },
-      "V-10012": { "recommended_price": 27100, "recommended_range": { "low": 26000, "high": 28300 }, "source_methodology": "VAUTO_MARKET_INDEX_V4", "market_position": "ABOVE_MARKET", "confidence": "MEDIUM", "effective_date": "2026-07-21", "service_version": "4.2.1" }
+      "V-10001": {
+        "recommended_price": 28400,
+        "recommended_range": {
+          "low": 27600,
+          "high": 29300
+        },
+        "source_methodology": "VAUTO_MARKET_INDEX_V4",
+        "market_position": "AT_MARKET",
+        "confidence": "HIGH",
+        "effective_date": "2026-07-21",
+        "service_version": "4.2.1"
+      },
+      "V-10002": {
+        "recommended_price": 24100,
+        "recommended_range": {
+          "low": 23400,
+          "high": 24900
+        },
+        "source_methodology": "VAUTO_MARKET_INDEX_V4",
+        "market_position": "ABOVE_MARKET",
+        "confidence": "HIGH",
+        "effective_date": "2026-07-21",
+        "service_version": "4.2.1"
+      },
+      "V-10003": {
+        "recommended_price": 32200,
+        "recommended_range": {
+          "low": 31100,
+          "high": 33400
+        },
+        "source_methodology": "VAUTO_MARKET_INDEX_V4",
+        "market_position": "AT_MARKET",
+        "confidence": "MEDIUM",
+        "effective_date": "2026-07-21",
+        "service_version": "4.2.1"
+      },
+      "V-10004": {
+        "recommended_price": 15100,
+        "recommended_range": {
+          "low": 14400,
+          "high": 15800
+        },
+        "source_methodology": "VAUTO_MARKET_INDEX_V4",
+        "market_position": "ABOVE_MARKET",
+        "confidence": "MEDIUM",
+        "effective_date": "2026-07-21",
+        "service_version": "4.2.1"
+      },
+      "V-10005": {
+        "recommended_price": 24900,
+        "recommended_range": {
+          "low": 23600,
+          "high": 26200
+        },
+        "source_methodology": "VAUTO_MARKET_INDEX_V4",
+        "market_position": "AT_MARKET",
+        "confidence": "MEDIUM",
+        "effective_date": "2026-07-21",
+        "service_version": "4.2.1"
+      },
+      "V-10006": {
+        "recommended_price": 21400,
+        "recommended_range": {
+          "low": 20300,
+          "high": 22500
+        },
+        "source_methodology": "VAUTO_MARKET_INDEX_V4",
+        "market_position": "AT_MARKET",
+        "confidence": "MEDIUM",
+        "effective_date": "2026-07-21",
+        "service_version": "4.2.1"
+      },
+      "V-10007": {
+        "recommended_price": 29000,
+        "recommended_range": {
+          "low": 28200,
+          "high": 29900
+        },
+        "source_methodology": "VAUTO_MARKET_INDEX_V4",
+        "market_position": "AT_MARKET",
+        "confidence": "HIGH",
+        "effective_date": "2026-07-21",
+        "service_version": "4.2.1"
+      },
+      "V-10008": {
+        "recommended_price": 26900,
+        "recommended_range": {
+          "low": 26100,
+          "high": 27800
+        },
+        "source_methodology": "VAUTO_MARKET_INDEX_V4",
+        "market_position": "ABOVE_MARKET",
+        "confidence": "HIGH",
+        "effective_date": "2026-07-21",
+        "service_version": "4.2.1"
+      },
+      "V-10009": {
+        "recommended_price": 23200,
+        "recommended_range": {
+          "low": 21300,
+          "high": 25100
+        },
+        "source_methodology": "VAUTO_MARKET_INDEX_V4",
+        "market_position": "AT_MARKET",
+        "confidence": "LOW",
+        "effective_date": "2026-07-21",
+        "service_version": "4.2.1"
+      },
+      "V-10010": {
+        "recommended_price": 36000,
+        "recommended_range": {
+          "low": 35000,
+          "high": 37100
+        },
+        "source_methodology": "VAUTO_MARKET_INDEX_V4",
+        "market_position": "AT_MARKET",
+        "confidence": "MEDIUM",
+        "effective_date": "2026-07-18",
+        "service_version": "4.2.1"
+      },
+      "V-10011": {
+        "recommended_price": 19000,
+        "recommended_range": {
+          "low": 18400,
+          "high": 19700
+        },
+        "source_methodology": "VAUTO_MARKET_INDEX_V4",
+        "market_position": "AT_MARKET",
+        "confidence": "HIGH",
+        "effective_date": "2026-07-21",
+        "service_version": "4.2.1"
+      },
+      "V-10012": {
+        "recommended_price": 27100,
+        "recommended_range": {
+          "low": 26000,
+          "high": 28300
+        },
+        "source_methodology": "VAUTO_MARKET_INDEX_V4",
+        "market_position": "ABOVE_MARKET",
+        "confidence": "MEDIUM",
+        "effective_date": "2026-07-21",
+        "service_version": "4.2.1"
+      },
+      "V-10013": {
+        "recommended_price": 35300,
+        "recommended_range": {
+          "low": 34241,
+          "high": 36359
+        },
+        "source_methodology": "VAUTO_MARKET_INDEX_V4",
+        "market_position": "AT_MARKET",
+        "confidence": "HIGH",
+        "effective_date": "2026-07-29",
+        "service_version": "4.2.1"
+      },
+      "V-10014": {
+        "recommended_price": 30200,
+        "recommended_range": {
+          "low": 29294,
+          "high": 31106
+        },
+        "source_methodology": "VAUTO_MARKET_INDEX_V4",
+        "market_position": "AT_MARKET",
+        "confidence": "HIGH",
+        "effective_date": "2026-07-29",
+        "service_version": "4.2.1"
+      },
+      "V-10015": {
+        "recommended_price": 34200,
+        "recommended_range": {
+          "low": 33174,
+          "high": 35226
+        },
+        "source_methodology": "VAUTO_MARKET_INDEX_V4",
+        "market_position": "AT_MARKET",
+        "confidence": "HIGH",
+        "effective_date": "2026-07-29",
+        "service_version": "4.2.1"
+      },
+      "V-10016": {
+        "recommended_price": 27200,
+        "recommended_range": {
+          "low": 26384,
+          "high": 28016
+        },
+        "source_methodology": "VAUTO_MARKET_INDEX_V4",
+        "market_position": "AT_MARKET",
+        "confidence": "HIGH",
+        "effective_date": "2026-07-29",
+        "service_version": "4.2.1"
+      },
+      "V-10017": {
+        "recommended_price": 27700,
+        "recommended_range": {
+          "low": 26869,
+          "high": 28531
+        },
+        "source_methodology": "VAUTO_MARKET_INDEX_V4",
+        "market_position": "AT_MARKET",
+        "confidence": "HIGH",
+        "effective_date": "2026-07-29",
+        "service_version": "4.2.1"
+      },
+      "V-10018": {
+        "recommended_price": 28800,
+        "recommended_range": {
+          "low": 27936,
+          "high": 29664
+        },
+        "source_methodology": "VAUTO_MARKET_INDEX_V4",
+        "market_position": "AT_MARKET",
+        "confidence": "HIGH",
+        "effective_date": "2026-07-29",
+        "service_version": "4.2.1"
+      },
+      "V-10019": {
+        "recommended_price": 31200,
+        "recommended_range": {
+          "low": 30264,
+          "high": 32136
+        },
+        "source_methodology": "VAUTO_MARKET_INDEX_V4",
+        "market_position": "AT_MARKET",
+        "confidence": "HIGH",
+        "effective_date": "2026-07-29",
+        "service_version": "4.2.1"
+      },
+      "V-10020": {
+        "recommended_price": 26100,
+        "recommended_range": {
+          "low": 25317,
+          "high": 26883
+        },
+        "source_methodology": "VAUTO_MARKET_INDEX_V4",
+        "market_position": "AT_MARKET",
+        "confidence": "HIGH",
+        "effective_date": "2026-07-29",
+        "service_version": "4.2.1"
+      }
     },
-    "_note": "Per §9.4 and D5 this is treated as ONE evidence source. It anchors the market-supported range, but the internal comparable-based valuation runs independently against it and disagreement above 5% raises EXTERNAL_PROVIDER_VARIANCE."
+    "_note": "Per \u00a79.4 and D5 this is treated as ONE evidence source. It anchors the market-supported range, but the internal comparable-based valuation runs independently against it and disagreement above 5% raises EXTERNAL_PROVIDER_VARIANCE."
   },
   "meta": {
     "source": "VAUTO",

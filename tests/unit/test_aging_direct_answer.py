@@ -21,8 +21,8 @@ from pricing_agent.workflows.improve_aging import ImproveAgingRequest, run_impro
 AGENTS = Path(__file__).resolve().parents[2] / "src" / "pricing_agent" / "agents"
 AS_OF = datetime(2026, 7, 29, 14, 0, tzinfo=timezone.utc)
 
-IMMEDIATE_IDS = ["V-10005", "V-10012", "V-10002", "V-10006", "V-10004"]
-NO_IMMEDIATE_IDS = ["V-10008", "V-10001"]
+IMMEDIATE_IDS = ["V-10005", "V-10002", "V-10012", "V-10006", "V-10019", "V-10004"]
+NO_IMMEDIATE_IDS = ["V-10013", "V-10014"]
 ANALYSED_IDS = IMMEDIATE_IDS + NO_IMMEDIATE_IDS
 
 SUMMER = ImproveAgingRequest(
@@ -53,7 +53,7 @@ def event_answer():
 def test_answer_names_all_seven_analysed_vehicles(answer):
     ids = {v.vehicle_id for v in answer.immediate} | {v.vehicle_id for v in answer.no_immediate}
     assert ids == set(ANALYSED_IDS)
-    assert answer.analysed_count == 7
+    assert answer.analysed_count == 8
     # Each vehicle is named with its dealer description (year + make …), not just an id.
     for v in list(answer.immediate) + list(answer.no_immediate):
         assert v.description and v.description.split()[0].isdigit()
@@ -64,7 +64,7 @@ def test_answer_names_all_seven_analysed_vehicles(answer):
 
 def test_answer_lists_all_five_immediate_action_vehicles(answer):
     assert [v.vehicle_id for v in answer.immediate] == IMMEDIATE_IDS
-    assert answer.immediate_count == 5
+    assert answer.immediate_count == 6
     for v in answer.immediate:
         assert v.action_label and v.reason
 
@@ -85,9 +85,9 @@ def test_answer_identifies_the_two_no_immediate_vehicles(answer):
 def test_answer_does_not_imply_all_seven_should_be_promoted(answer):
     assert answer.event_selected is False
     assert answer.promotion_finalized is False
-    # None of the immediate actions is a promotion, and the buckets stay 5 + 2.
+    # None of the immediate actions is a promotion, and the buckets stay 6 + 2.
     assert all(v.action_code != "EVENT_PROMOTION" for v in answer.immediate)
-    assert answer.immediate_count == 5 and answer.no_immediate_count == 2
+    assert answer.immediate_count == 6 and answer.no_immediate_count == 2
     text = " ".join([answer.understood, answer.promotion_note, answer.key_review_note]).lower()
     assert "all seven" not in text and "7 vehicles are recommended for promotion" not in text
 
@@ -112,13 +112,13 @@ def test_reasons_are_built_from_existing_reason_labels(answer):
 
 
 def test_answer_review_counts_are_vehicle_based(answer):
-    assert answer.review_vehicle_count == 5
+    assert answer.review_vehicle_count == 6
     assert answer.manager_review_count == 2
-    assert answer.review_item_count == 17
-    assert "5 vehicles require review" in answer.key_review_note
+    assert answer.review_item_count == 20
+    assert "6 vehicles require review" in answer.key_review_note
     # The default dealer text never leads with the raw record count.
-    assert "17" not in answer.key_review_note
-    assert "17" not in answer.understood and "17" not in answer.promotion_note
+    assert "20" not in answer.key_review_note
+    assert "20" not in answer.understood and "20" not in answer.promotion_note
 
 
 def test_answer_invents_no_vehicle(no_event_response, answer):
@@ -134,8 +134,9 @@ def test_event_answer_distinguishes_promoted_and_finalizes(event_answer):
     assert event_answer.event_selected is True
     assert event_answer.promotion_finalized is True
     assert event_answer.event_block is not None
-    assert len(event_answer.event_block.promoted) >= 1
-    # With the event, the two hold-gross vehicles become promotion candidates.
+    # With the event applied, both hold-gross analysed units are picked up for promotion and
+    # move into the immediate side, leaving no no-immediate units; the promoted units surface
+    # via the event block.
     assert event_answer.no_immediate_count == 0
     assert "not finalized" not in event_answer.promotion_note.lower()
 

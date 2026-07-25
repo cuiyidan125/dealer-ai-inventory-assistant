@@ -111,12 +111,15 @@ def test_pf09_missing_cost_basis_is_counted_not_dropped(validator_for):
                 {"op": "remove", "path": "cost_basis.V-10003"},
                 {"op": "remove", "path": "cost_basis.V-10007"},
                 {"op": "remove", "path": "cost_basis.V-10009"},
+                {"op": "remove", "path": "cost_basis.V-10010"},
+                {"op": "remove", "path": "cost_basis.V-10011"},
             ]
         )
     )
     coverage = result["data_coverage"]
-    assert coverage["missing_cost_basis"] == 3
-    assert coverage["vehicles_analyzed"] == coverage["vehicles_requested"] - 3
+    # On the 20-car lot five removals drop coverage to 0.75, below the 0.80 confidence floor.
+    assert coverage["missing_cost_basis"] == 5
+    assert coverage["vehicles_analyzed"] == coverage["vehicles_requested"] - 5
     assert coverage["coverage_ratio"] < 0.8
     assert {"LOW_PORTFOLIO_FORECAST_CONFIDENCE", "INCOMPLETE_INVENTORY_DATA"} <= _codes(result)
 
@@ -154,9 +157,14 @@ def test_promotion_result_is_schema_valid(summer_plan, validator_for):
     assert not errors, errors[:2]
 
 
-def test_pr02_unreachable_target_returns_quantified_alternatives(summer_plan):
-    """Returning 'not achievable' without them leaves the manager where they started."""
-    feasibility = summer_plan["feasibility"]
+def test_pr02_unreachable_target_returns_quantified_alternatives():
+    """Returning 'not achievable' without them leaves the manager where they started.
+
+    On the 20-car lot the canonical 70% target is achievable, so a much tighter 55% target
+    (requiring far more sales than the window allows) exercises the unreachable path.
+    """
+    plan = plan_event(_transport(), "EVT-SUMMER-2026", 0.55)
+    feasibility = plan["feasibility"]
     assert feasibility["status"] in ("AT_RISK", "NOT_ACHIEVABLE")
     assert feasibility["alternatives"]
     for alternative in feasibility["alternatives"]:
