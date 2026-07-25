@@ -500,6 +500,8 @@ def _render_pricing_result(response: AssistantResponse) -> None:
         f"market (`{response.resolved_vehicle_id}`).",
         icon="✅",
     )
+    if s.get("vin"):
+        st.caption(f"VIN {s['vin']}")
 
     c1, c2, c3, c4 = st.columns(4)
     c1.metric("Current asking price", _money(s.get("current_list_price")))

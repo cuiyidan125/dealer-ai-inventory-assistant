@@ -144,8 +144,11 @@ def render_vehicle_detail(workflow_context: WorkflowContext | None = None) -> No
         vehicle_heading(
             f"{vehicle['year']} {vehicle['make']} {vehicle['model']} {vehicle['trim'] or ''}".strip()
         )
+        vin = vehicle.get("vin")
         st.caption(
-            f"{vehicle['vehicle_id']} · {vehicle['mileage']:,} miles · "
+            f"{vehicle['vehicle_id']} · "
+            + (f"VIN {vin} · " if vin else "")
+            + f"{vehicle['mileage']:,} miles · "
             f"{vehicle['days_in_inventory']} days in inventory · {vehicle['condition'].title()}"
         )
 
