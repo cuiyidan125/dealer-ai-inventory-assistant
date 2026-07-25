@@ -18,6 +18,7 @@ import pytest
 from pricing_agent.agents import new_state, run_assistant
 from pricing_agent.agents import followup as followup_mod
 from pricing_agent.agents.followup import detect_new_workflow, handle_followup
+from pricing_agent.workflows.context import WorkflowContext
 
 AGENTS = Path(__file__).resolve().parents[2] / "src" / "pricing_agent" / "agents"
 AS_OF = datetime(2026, 7, 29, 14, 0, tzinfo=timezone.utc)
@@ -237,3 +238,41 @@ def test_followup_on_a_non_aging_first_turn_is_honest_not_fabricated():
     assert result.kind == "clarification"
     assert "Single Vehicle Valuation" in result.text
     assert not result.reran
+
+
+# --- switching *out of* a single-skill result -----------------------------------------
+# From a valuation (or any single-skill result), a question that routes to a different workflow
+# switches to it, instead of dead-ending in "ask me to value another vehicle".
+
+
+def _valuation_state():
+    s = new_state()
+    r = run_assistant("What should I price 2020 Toyota Camry LE?", as_of=AS_OF)
+    s.add_user("What should I price 2020 Toyota Camry LE?")
+    s.add_assistant(r.message, "first_turn", result=r.result, response=r)
+    s.adopt_response(r)
+    assert s.active_workflow_type == "PRICE_INVENTORY"
+    return s
+
+
+def test_portfolio_question_after_a_valuation_switches_to_the_forecast():
+    s = _valuation_state()
+    result = handle_followup("What will my inventory look like in the next 30 days?", s, as_of=AS_OF)
+    assert result.kind == "workflow_switch"
+    assert result.success is True
+    assert s.active_workflow_type == "ACQUIRE_INVENTORY"
+    # The prior valuation is preserved, not discarded.
+    assert [p.workflow_type for p in s.prior_workflows] == ["PRICE_INVENTORY"]
+
+
+def test_detect_switches_to_a_different_workflow_from_a_single_skill_result():
+    s = _valuation_state()
+    routed = detect_new_workflow("What will my inventory look like in the next 30 days?", s)
+    assert routed is not None
+    assert routed.selected_workflow is WorkflowContext.ACQUIRE_INVENTORY
+
+
+def test_portfolio_question_does_not_switch_out_of_the_aging_result(state):
+    # From the multi-turn aging analysis (which already diagnoses the portfolio), a portfolio
+    # question stays an aging follow-up rather than spawning a separate forecast.
+    assert detect_new_workflow("What will my inventory look like in the next 30 days?", state) is None
