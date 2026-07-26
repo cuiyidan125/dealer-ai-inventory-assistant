@@ -21,6 +21,7 @@ from pricing_agent.mcp_clients import MockTransport, VautoClient
 from pricing_agent.skills.inventory_portfolio import analyze
 from pricing_agent.views import terminology as T
 from pricing_agent.views.glossary import render_glossary
+from pricing_agent.views.review_panel import render_review_panel
 from pricing_agent.views.style import style_fig
 from pricing_agent.views.workflow_copy import render_workflow_header
 from pricing_agent.workflows.context import WorkflowContext
@@ -62,11 +63,6 @@ ACTION_LABEL = {
     "EVENT_PROMOTION": "🟡 Event promotion",
     "INCREASE_PRICE": "🟢 Raise price",
     "RETAIN_PRICE": "🟢 Hold price",
-}
-
-SEVERITY_KIND = {
-    "BLOCKING": "error", "CRITICAL": "error", "HIGH": "warning",
-    "MEDIUM": "warning", "LOW": "info", "INFO": "info",
 }
 
 
@@ -142,12 +138,11 @@ def render_dashboard(workflow_context: WorkflowContext | None = None) -> None:
               delta_color="off")
 
     shown = [w for w in result["warnings"] if w["severity"] in ("BLOCKING", "CRITICAL", "HIGH")]
-    for warning in shown:
-        kind = SEVERITY_KIND[warning["severity"]]
-        getattr(st, kind)(md(f"**{T.warning_label(warning['code'])}** — {warning['message']}  \n_{warning['remediation']}_"))
     if shown:
-        with st.expander("View technical reason codes"):
-            st.caption("Warning codes: " + ", ".join(f"`{w['code']}`" for w in shown))
+        render_review_panel(
+            shown,
+            heading=f"{len(shown)} thing{'s' if len(shown) != 1 else ''} to review before you acquire",
+        )
 
     st.caption("Your lot today, and what it looks like over the next 30 and 90 days.")
     lot_tab, forecast_tab, risk_tab = st.tabs(
@@ -287,11 +282,8 @@ def render_dashboard(workflow_context: WorkflowContext | None = None) -> None:
                     )
                 ))
 
-        st.subheader("All alerts")
-        for warning in result["warnings"]:
-            st.markdown(md(f"**{T.warning_label(warning['code'])}** — {warning['message']}"))
-        with st.expander("View technical reason codes"):
-            st.caption("Warning codes: " + ", ".join(f"`{w['code']}`" for w in result["warnings"]))
+        if result["warnings"]:
+            render_review_panel(result["warnings"], heading="All alerts")
 
         with st.expander("Data coverage and audit"):
             st.json(result["data_coverage"])
