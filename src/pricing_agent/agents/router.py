@@ -119,7 +119,12 @@ INVENTORY_PRESSURE = re.compile(
     r"\b(lot is full|lot'?s full|too many|overstock\w*|over[\s-]?capacit\w+|"
     r"reduce (my |the )?inventory|reduce (my |the )?(inventory )?utilization|"
     r"bring (my |the )?(inventory|utilization) down|cut (my |the )?inventory|"
-    r"reprice or promote|which vehicles should i (reprice|promote|move))\b"
+    r"reprice or promote|which vehicles should i (reprice|promote|move)|"
+    # Freeing lot space is an Improve-Aging job (clear aged units), even when the dealer frames it
+    # as a precursor to acquiring — "free up space before I acquire" must not read as a portfolio
+    # follow-up.
+    r"free up space|free up room|make room|clear (out )?(the )?(aged|old|space)|"
+    r"plan to free)\b"
 )
 
 FORECAST_HORIZON = re.compile(r"\bnext\s+\d+\s+(day|days|week|weeks|month|months)\b")

@@ -159,11 +159,14 @@ def handle_followup(text: str, state: ConversationState, *, as_of: datetime) -> 
         # A genuine switch takes precedence — *unless* we're in a pricing conversation and the
         # message is a clear pricing follow-up about the current car. That yields the switch, so a
         # re-target like "sell it within 20 days" isn't mis-routed by a coarse "…30 days…" cue.
-        pricing_followup_here = False
+        followup_here = False
         if state.active_workflow_type == "PRICE_INVENTORY":
             from pricing_agent.agents.pricing_followup import classify as _pricing_classify
-            pricing_followup_here = _pricing_classify(text, state) is not None
-        if not pricing_followup_here:
+            followup_here = _pricing_classify(text, state) is not None
+        elif state.active_workflow_type == "ACQUIRE_INVENTORY":
+            from pricing_agent.agents.portfolio_followup import classify as _portfolio_classify
+            followup_here = _portfolio_classify(text, state) is not None
+        if not followup_here:
             return _record(state, _switch_workflow(text, state, routed, as_of))
 
     if state.active_workflow_type == "IMPROVE_AGING_INVENTORY":
@@ -182,7 +185,13 @@ def handle_followup(text: str, state: ConversationState, *, as_of: datetime) -> 
         if priced is not None:
             return _record(state, priced)
 
-    # Active workflow is not the multi-turn aging result and no pricing handler matched.
+    if state.active_workflow_type == "ACQUIRE_INVENTORY":
+        from pricing_agent.agents.portfolio_followup import handle_portfolio_followup
+        portfolio = handle_portfolio_followup(text, state, as_of=as_of)
+        if portfolio is not None:
+            return _record(state, portfolio)
+
+    # Active workflow is not the multi-turn aging result and no follow-up handler matched.
     return _record(state, _non_aging_followup(state))
 
 
