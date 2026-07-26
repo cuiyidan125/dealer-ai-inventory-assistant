@@ -176,6 +176,7 @@ def _pricing_summary(result: dict) -> dict:
         if "description" in result["vehicle"]
         else f"{result['vehicle']['year']} {result['vehicle']['make']} "
         f"{result['vehicle']['model']} {result['vehicle']['trim']}".strip(),
+        "vin": result["vehicle"].get("vin"),
         "current_list_price": result["vehicle"]["current_list_price"],
         "recommended_price": scenario["proposed_list_price"],
         "p50_days_to_sale": scenario["additional_days_to_sale"]["p50"],
