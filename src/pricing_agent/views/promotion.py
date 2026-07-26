@@ -21,6 +21,7 @@ from pricing_agent.mcp_clients import EventClient, MockTransport, VautoClient
 from pricing_agent.skills.promotion_planner import plan_event
 from pricing_agent.views import terminology as T
 from pricing_agent.views.glossary import render_glossary
+from pricing_agent.views.review_panel import render_review_panel
 from pricing_agent.views.style import style_fig
 from pricing_agent.views.workflow_copy import render_workflow_header
 from pricing_agent.workflows.context import WorkflowContext
@@ -348,11 +349,7 @@ def render_promotion_planner(workflow_context: WorkflowContext | None = None) ->
     # --- warnings -------------------------------------------------------------------------
 
     if result["warnings"]:
-        st.subheader("What to review")
-        for warning in result["warnings"]:
-            st.markdown(md(f"**{T.warning_label(warning['code'])}** — {warning['message']}"))
-        with st.expander("View technical reason codes"):
-            st.caption("Warning codes: " + ", ".join(f"`{w['code']}`" for w in result["warnings"]))
+        render_review_panel(result["warnings"], heading="What to review")
 
     with st.expander("Audit"):
         st.write(

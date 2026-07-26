@@ -25,6 +25,7 @@ from pricing_agent.mcp_clients import MockTransport, VautoClient
 from pricing_agent.views import improve_aging_copy as copy
 from pricing_agent.views import terminology as T
 from pricing_agent.views.glossary import render_glossary
+from pricing_agent.views.review_panel import render_review_panel
 from pricing_agent.views.workflow_copy import render_workflow_header
 from pricing_agent.workflows.context import WorkflowContext
 from pricing_agent.workflows.improve_aging import (
@@ -573,21 +574,17 @@ def _warnings_and_approvals(result) -> None:
     else:
         st.caption("No manager reviews required.")
 
-    labels = sorted(
-        {T.warning_label(w["code"]) for ev in result.vehicle_evidence for w in ev.warnings}
-        | {T.warning_label(w["code"]) for w in (result.promotion_result or {}).get("warnings", [])}
-        | {T.warning_label(w["code"]) for w in (result.portfolio_result or {}).get("warnings", [])}
-    )
-    if labels:
-        st.markdown("**What to review:** " + " · ".join(labels))
-    codes = sorted(
-        {w["code"] for ev in result.vehicle_evidence for w in ev.warnings}
-        | {w["code"] for w in (result.promotion_result or {}).get("warnings", [])}
-        | {w["code"] for w in (result.portfolio_result or {}).get("warnings", [])}
-    )
-    if codes:
-        with st.expander("View technical reason codes"):
-            st.caption("Warning codes: " + ", ".join(f"`{c}`" for c in codes))
+    # Deduplicate the sub-analyses' warnings by code (first occurrence keeps the full record) and
+    # surface them in the same calm panel used everywhere else.
+    unique: dict[str, dict] = {}
+    for w in (
+        [w for ev in result.vehicle_evidence for w in ev.warnings]
+        + list((result.promotion_result or {}).get("warnings", []))
+        + list((result.portfolio_result or {}).get("warnings", []))
+    ):
+        unique.setdefault(w["code"], w)
+    if unique:
+        render_review_panel(list(unique.values()), heading="Other flags to review")
 
 
 # --- 10. five-step workflow summary ---------------------------------------------------
