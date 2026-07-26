@@ -120,6 +120,25 @@ class WorkflowDefinition:
 # --- dealer workflows -----------------------------------------------------------------
 
 DEALER_WORKFLOWS: tuple[WorkflowDefinition, ...] = (
+    # Demo narrative order: individual-vehicle pricing first, then portfolio management.
+    WorkflowDefinition(
+        workflow_id="price-inventory",
+        display_name="Price Inventory",
+        description=(
+            "Value a vehicle against the local market, compare gross against turn, and "
+            "see the floor that constrains the price."
+        ),
+        navigation=NavigationEntry(
+            title="Price Inventory",
+            url_path="price-inventory",
+            icon=":material/sell:",
+            group=NavigationGroup.DEALER_WORKFLOWS,
+        ),
+        render=render_vehicle_detail,
+        context=WorkflowContext.PRICE_INVENTORY,
+        skills=(SkillId.SINGLE_VEHICLE_VALUATION,),
+        availability=Availability.AVAILABLE,
+    ),
     WorkflowDefinition(
         workflow_id="acquire-inventory",
         display_name="Acquire Inventory",
@@ -144,24 +163,6 @@ DEALER_WORKFLOWS: tuple[WorkflowDefinition, ...] = (
             PROTOTYPE_DISCLAIMER
             + " Appraisal of an external acquisition candidate is a future enhancement."
         ),
-    ),
-    WorkflowDefinition(
-        workflow_id="price-inventory",
-        display_name="Price Inventory",
-        description=(
-            "Value a vehicle against the local market, compare gross against turn, and "
-            "see the floor that constrains the price."
-        ),
-        navigation=NavigationEntry(
-            title="Price Inventory",
-            url_path="price-inventory",
-            icon=":material/sell:",
-            group=NavigationGroup.DEALER_WORKFLOWS,
-        ),
-        render=render_vehicle_detail,
-        context=WorkflowContext.PRICE_INVENTORY,
-        skills=(SkillId.SINGLE_VEHICLE_VALUATION,),
-        availability=Availability.AVAILABLE,
     ),
     WorkflowDefinition(
         workflow_id="merchandise-inventory",

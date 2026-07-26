@@ -17,6 +17,7 @@ from pricing_agent.agents import portfolio_copy as C
 from pricing_agent.agents.conversation import (
     SOURCE_PORTFOLIO_ACQUIRE_REVIEW,
     SOURCE_PORTFOLIO_LOT_TODAY,
+    SOURCE_PORTFOLIO_OUTLOOK,
     SOURCE_PORTFOLIO_TOP_RISK,
     ConversationState,
 )
@@ -41,6 +42,12 @@ _ACQUIRE_REVIEW = re.compile(
     r"purchas\w+|stock\s+up)\b)"
     r"(?=.*\b(review|check|look at|what\s+should\s+i|what\s+(to|do\s+i)\s+(review|check|fix|watch)|"
     r"ready\s+to\s+(buy|acquire)|due\s+diligence|fix\s+first|watch\s+out|first)\b)", re.I | re.S)
+
+# Forward-looking outlook ("next 30 days", "forecast"). Checked before lot-today so a "…30 days"
+# ask is the outlook, while lot-today needs an explicit "today / now / current".
+_OUTLOOK = re.compile(
+    r"next\s+\d+\s+(day|week|month)|\b(30|90|thirty|ninety)\s*[- ]?day|\bforecast\b|\boutlook\b|"
+    r"look\s+like\s+in|expected\s+to\s+sell|going\s+to\s+(sell|do)|\bwhat\s+will\b", re.I)
 
 _LOT_TODAY = re.compile(
     r"\blot\b.*\b(today|now|right now)\b|\b(current|today'?s)\s+(lot|inventory|state|health)\b|"
@@ -75,6 +82,8 @@ def classify(text: str, state: ConversationState) -> str | None:
         return "top_risk"
     if _ACQUIRE_REVIEW.search(text):
         return "acquire_review"
+    if _OUTLOOK.search(text):
+        return "outlook"
     if _LOT_TODAY.search(text):
         return "lot_today"
     return None
@@ -86,9 +95,19 @@ def handle_portfolio_followup(text: str, state: ConversationState, *, as_of: dat
         return _top_risk(text, state)
     if kind == "acquire_review":
         return _acquire_review(text, state)
+    if kind == "outlook":
+        return _outlook(text, state)
     if kind == "lot_today":
         return _lot_today(text, state)
     return None
+
+
+def _outlook(text: str, state: ConversationState) -> FollowupResult:
+    result = state.active_result
+    kpis = C.outlook_kpis(result)
+    payload = {"kind": "outlook", "summary": C.outlook_summary(kpis), "kpis": kpis}
+    state.last_portfolio_followup_kind = "outlook"
+    return FollowupResult(SOURCE_PORTFOLIO_OUTLOOK, C.outlook_summary(kpis), payload=payload)
 
 
 def _lot_today(text: str, state: ConversationState) -> FollowupResult:

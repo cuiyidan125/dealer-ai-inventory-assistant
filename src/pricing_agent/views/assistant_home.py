@@ -19,6 +19,7 @@ import cycle with `workflows.registry`.
 
 from __future__ import annotations
 
+import re
 from datetime import datetime, timezone
 from typing import Iterable, NamedTuple
 
@@ -41,6 +42,7 @@ from pricing_agent.agents.conversation import (
     SOURCE_FIRST_TURN,
     SOURCE_PORTFOLIO_ACQUIRE_REVIEW,
     SOURCE_PORTFOLIO_LOT_TODAY,
+    SOURCE_PORTFOLIO_OUTLOOK,
     SOURCE_PORTFOLIO_TOP_RISK,
     SOURCE_PRICING_DETAIL,
     SOURCE_PRICING_REASONING,
@@ -83,6 +85,7 @@ _PROVENANCE = {
     SOURCE_PRICING_STRATEGIES: "📊 Pricing strategies compared",
     SOURCE_PRICING_DETAIL: "🧾 Selected strategy — detail",
     SOURCE_PRICING_REASONING: "🧭 Reasoning",
+    SOURCE_PORTFOLIO_OUTLOOK: "🔮 Inventory outlook — next 30 days",
     SOURCE_PORTFOLIO_LOT_TODAY: "📊 Your lot today",
     SOURCE_PORTFOLIO_TOP_RISK: "🚨 Vehicles needing attention",
     SOURCE_PORTFOLIO_ACQUIRE_REVIEW: "🧭 Before you acquire",
@@ -262,16 +265,18 @@ def _render_conversation(conversation) -> None:
     """The full turn-by-turn thread. Prior turns are never erased; the first turn renders the
     Slice-1 rich answer, a workflow switch renders the new workflow's result, and other turns
     render their grounded text with a provenance chip."""
+    last_user_text = ""
     for message in conversation.messages:
         with st.chat_message(message.role):
             if message.role == "user":
+                last_user_text = message.text
                 st.markdown(md(message.text))
             elif message.source == SOURCE_FIRST_TURN and message.response is not None:
-                _render_workflow_result(message.response)
+                _render_workflow_result(message.response, last_user_text)
             elif message.source == SOURCE_SWITCH and message.response is not None:
                 st.caption(_PROVENANCE[SOURCE_SWITCH])
                 st.markdown(md(message.text))
-                _render_workflow_result(message.response)
+                _render_workflow_result(message.response, last_user_text)
             elif message.source in PRICING_FOLLOWUP_SOURCES and message.payload is not None:
                 st.caption(_PROVENANCE.get(message.source, ""))
                 _render_pricing_followup(message.payload)
@@ -289,13 +294,14 @@ def _render_conversation(conversation) -> None:
                                         "Open the updated workspace →")
 
 
-def _render_workflow_result(response: AssistantResponse) -> None:
+def _render_workflow_result(response: AssistantResponse, entry_text: str = "") -> None:
     """Render a workflow's normal result inside the thread — used for the first turn and for a
-    later workflow switch. Dispatches on the response's workflow context."""
+    later workflow switch. Dispatches on the response's workflow context. `entry_text` is the
+    question that opened the turn, so the portfolio result can open on today vs the outlook."""
     if response.workflow is WorkflowContext.PRICE_INVENTORY:
         _render_pricing_result(response)
     elif response.workflow is WorkflowContext.ACQUIRE_INVENTORY:
-        _render_portfolio_result(response)
+        _render_portfolio_result(response, entry_text)
     elif response.workflow is WorkflowContext.MERCHANDISE_INVENTORY:
         _render_promotion_result(response)
     elif response.workflow is WorkflowContext.IMPROVE_AGING_INVENTORY:
@@ -677,15 +683,34 @@ def _inventory_by_id(as_of: datetime) -> dict:
     return {v["vehicle_id"]: v for v in data}
 
 
-def _render_portfolio_result(response: AssistantResponse) -> None:
-    """First ACQUIRE turn, reframed as the 30-day outlook — KPI cards + the revenue range chart."""
+# A forward-looking opener ("next 30 days", "forecast") opens on the outlook; anything else opens on
+# the lot today — present before future, the natural dealer journey.
+_ENTRY_OUTLOOK = re.compile(
+    r"next\s+\d+\s+(day|week|month)|\b(30|90|thirty|ninety)\s*[- ]?day|forecast|outlook|"
+    r"look\s+like\s+in|expected\s+to\s+sell|going\s+to\s+(sell|do)|\bwhat\s+will\b", re.I)
+
+
+def _render_portfolio_result(response: AssistantResponse, entry_text: str = "") -> None:
+    """First ACQUIRE turn. Adapts to how the dealer opened the conversation: a forward-looking
+    question shows the 30-day outlook; anything else opens on the lot today."""
     from pricing_agent.agents import portfolio_copy as PC
     result = response.result if isinstance(response.result, dict) else {}
-    k = PC.outlook_kpis(result)
-    st.success("Here's what your lot is expected to do over the next 30 days — a forecast for "
-               "existing inventory only, so it's a cautious lower estimate.", icon="🔮")
-    st.markdown(md(PC.outlook_summary(k)))
+    if _ENTRY_OUTLOOK.search(entry_text or ""):
+        st.success("Here's what your lot is expected to do over the next 30 days — a forecast for "
+                   "existing inventory only, so it's a cautious lower estimate.", icon="🔮")
+        k = PC.outlook_kpis(result)
+        st.markdown(md(PC.outlook_summary(k)))
+        _portfolio_outlook_body(k)
+    else:
+        st.success("Here's where your lot stands today.", icon="📊")
+        k = PC.lot_today_kpis(result)
+        st.markdown(md(PC.lot_today_summary(k)))
+        _portfolio_lot_today_body(k, PC.select_top_risk(result, None))
+    if response.target_url:
+        _open_workflow_link(response.target_url, "Open the full Acquire Inventory analysis →")
 
+
+def _portfolio_outlook_body(k: dict) -> None:
     c1, c2, c3, c4 = st.columns(4)
     c1.metric("🔮 Expected vehicles sold (P50)", f"{(k['sold_p50'] or 0):.0f}",
               (f"range {k['sold_p10']:.0f}–{k['sold_p90']:.0f}" if k.get("sold_p10") is not None else ""),
@@ -695,12 +720,10 @@ def _render_portfolio_result(response: AssistantResponse) -> None:
               delta_color="off")
     c3.metric("💰 Expected front-end gross (P50)", _money(k["gross_p50"]))
     c4.metric("📊 Expected lot capacity used (P50)", f"{(k['capacity_used_p50'] or 0):.0%}")
-
     if k.get("below_target_prob"):
         # _money already escapes '$' for markdown — don't wrap it in md() again (double-escape).
         st.markdown(f"**{k['below_target_prob']:.0%}** chance revenue falls below the "
                     f"**{_money(k['revenue_target'])}** target.")
-
     if k.get("revenue_p50") is not None and k.get("revenue_p10") is not None:
         ys = [k["revenue_p10"], k["revenue_p50"], k["revenue_p90"]]
         fig = go.Figure(go.Bar(
@@ -710,27 +733,9 @@ def _render_portfolio_result(response: AssistantResponse) -> None:
                           showlegend=False)
         st.plotly_chart(style_fig(fig))
 
-    if response.target_url:
-        _open_workflow_link(response.target_url, "Open the full Acquire Inventory analysis →")
 
-
-# --- portfolio follow-up rendering (structured payloads from portfolio_followup) ------
-
-
-def _render_portfolio_followup(payload: dict) -> None:
-    kind = payload.get("kind")
-    if kind == "lot_today":
-        _render_portfolio_lot_today(payload)
-    elif kind == "top_risk":
-        _render_portfolio_top_risk(payload)
-    elif kind == "acquire_review":
-        _render_portfolio_acquire_review(payload)
-
-
-def _render_portfolio_lot_today(p: dict) -> None:
+def _portfolio_lot_today_body(k: dict, vehicles: list) -> None:
     from pricing_agent.agents import portfolio_copy as PC
-    st.markdown(md(p["summary"]))
-    k = p["kpis"]
     c = st.columns(5)
     c[0].metric("🚗 Units on lot", k.get("units_on_lot", "—"),
                 f"{k.get('open_slots', 0)} open", delta_color="off")
@@ -746,7 +751,7 @@ def _render_portfolio_lot_today(p: dict) -> None:
 
     inv = _inventory_by_id(AS_OF)
     rows = []
-    for v in p["vehicles"]:
+    for v in vehicles:
         veh = inv.get(v["vehicle_id"], {})
         dot, label = PC.action_label(v.get("action_code"))
         rows.append({
@@ -772,6 +777,23 @@ def _render_portfolio_lot_today(p: dict) -> None:
     )
     st.caption("Ranked by risk of remaining unsold too long — time on lot, expected value loss, and "
                "chance of a negative outcome.")
+
+
+# --- portfolio follow-up rendering (structured payloads from portfolio_followup) ------
+
+
+def _render_portfolio_followup(payload: dict) -> None:
+    kind = payload.get("kind")
+    if kind == "outlook":
+        st.markdown(md(payload["summary"]))
+        _portfolio_outlook_body(payload["kpis"])
+    elif kind == "lot_today":
+        st.markdown(md(payload["summary"]))
+        _portfolio_lot_today_body(payload["kpis"], payload["vehicles"])
+    elif kind == "top_risk":
+        _render_portfolio_top_risk(payload)
+    elif kind == "acquire_review":
+        _render_portfolio_acquire_review(payload)
 
 
 def _pct_or_none(fraction) -> float | None:
