@@ -397,9 +397,14 @@ def _run_pricing(text: str, routed: RouteResult, *, as_of: datetime) -> Assistan
     )
 
 
+# Default 30-day revenue target, matching the Acquire dashboard's sidebar default, so the
+# conversational outlook can report the probability of missing it.
+DEFAULT_REVENUE_TARGET = 150_000
+
+
 def _run_portfolio(routed: RouteResult, *, as_of: datetime) -> AssistantResponse:
     transport = MockTransport(as_of=as_of)
-    result = inventory_portfolio.analyze(transport)
+    result = inventory_portfolio.analyze(transport, revenue_target_one_month=DEFAULT_REVENUE_TARGET)
     return AssistantResponse(
         state=AssistantState.ROUTED_AND_EXECUTED,
         message="Ran the portfolio forecast for acquisition readiness and capacity.",

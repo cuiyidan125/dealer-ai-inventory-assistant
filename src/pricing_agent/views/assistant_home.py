@@ -23,11 +23,15 @@ from datetime import datetime, timezone
 from typing import Iterable, NamedTuple
 
 import pandas as pd
+import plotly.graph_objects as go
 import streamlit as st
+import streamlit.components.v1 as components
 
+import ui_components
 from pricing_agent.agents import build_aging_answer, handle_followup, new_state, run_assistant
 from pricing_agent.agents.assistant import AssistantResponse, AssistantState
 from pricing_agent.agents.conversation import (
+    PORTFOLIO_FOLLOWUP_SOURCES,
     PRICING_FOLLOWUP_SOURCES,
     RICH_SOURCES,
     SOURCE_CLARIFICATION,
@@ -35,6 +39,9 @@ from pricing_agent.agents.conversation import (
     SOURCE_EXPLANATION,
     SOURCE_FILTERED,
     SOURCE_FIRST_TURN,
+    SOURCE_PORTFOLIO_ACQUIRE_REVIEW,
+    SOURCE_PORTFOLIO_LOT_TODAY,
+    SOURCE_PORTFOLIO_TOP_RISK,
     SOURCE_PRICING_DETAIL,
     SOURCE_PRICING_REASONING,
     SOURCE_PRICING_STRATEGIES,
@@ -43,8 +50,10 @@ from pricing_agent.agents.conversation import (
     SOURCE_SWITCH,
     SOURCE_UNSUPPORTED,
 )
+from pricing_agent.mcp_clients import MockTransport, VautoClient
 from pricing_agent.views import terminology as T
-from pricing_agent.views.review_panel import severity_dot
+from pricing_agent.views.review_panel import render_review_panel, severity_dot
+from pricing_agent.views.style import style_fig
 from pricing_agent.workflows.context import WorkflowContext
 from pricing_agent.workflows.pages import page_for
 
@@ -74,6 +83,9 @@ _PROVENANCE = {
     SOURCE_PRICING_STRATEGIES: "📊 Pricing strategies compared",
     SOURCE_PRICING_DETAIL: "🧾 Selected strategy — detail",
     SOURCE_PRICING_REASONING: "🧭 Reasoning",
+    SOURCE_PORTFOLIO_LOT_TODAY: "📊 Your lot today",
+    SOURCE_PORTFOLIO_TOP_RISK: "🚨 Vehicles needing attention",
+    SOURCE_PORTFOLIO_ACQUIRE_REVIEW: "🧭 Before you acquire",
 }
 
 # Read by the Price Inventory view to preselect the routed vehicle.
@@ -263,6 +275,9 @@ def _render_conversation(conversation) -> None:
             elif message.source in PRICING_FOLLOWUP_SOURCES and message.payload is not None:
                 st.caption(_PROVENANCE.get(message.source, ""))
                 _render_pricing_followup(message.payload)
+            elif message.source in PORTFOLIO_FOLLOWUP_SOURCES and message.payload is not None:
+                st.caption(_PROVENANCE.get(message.source, ""))
+                _render_portfolio_followup(message.payload)
             else:
                 caption = _PROVENANCE.get(message.source)
                 if caption:
@@ -654,24 +669,152 @@ def _render_pricing_reasoning(p: dict) -> None:
         st.markdown(f"**Next checkpoint**  \n{md(p.get('next_checkpoint', ''))}")
 
 
+@st.cache_data(show_spinner=False)
+def _inventory_by_id(as_of: datetime) -> dict:
+    """vehicle_id → static inventory metadata (description, days, price, photo) for presentation
+    enrichment only — never a re-run of any analysis."""
+    data = VautoClient(MockTransport(as_of=as_of)).get_dealer_inventory().data or []
+    return {v["vehicle_id"]: v for v in data}
+
+
 def _render_portfolio_result(response: AssistantResponse) -> None:
-    s = response.summary
-    st.success("Ran the portfolio forecast for acquisition readiness and capacity.", icon="✅")
+    """First ACQUIRE turn, reframed as the 30-day outlook — KPI cards + the revenue range chart."""
+    from pricing_agent.agents import portfolio_copy as PC
+    result = response.result if isinstance(response.result, dict) else {}
+    k = PC.outlook_kpis(result)
+    st.success("Here's what your lot is expected to do over the next 30 days — a forecast for "
+               "existing inventory only, so it's a cautious lower estimate.", icon="🔮")
+    st.markdown(md(PC.outlook_summary(k)))
 
     c1, c2, c3, c4 = st.columns(4)
-    c1.metric("Units on lot", s.get("units_on_lot", "—"), f"{s.get('open_slots', 0)} open")
-    c2.metric("Utilization", f"{s.get('utilization', 0):.0%}")
-    c3.metric(
-        "Sold, next 30 days (P50)", f"{s.get('thirty_day_units_p50', 0):.0f}",
-        f"P10 {s.get('thirty_day_units_p10', 0):.0f} – P90 {s.get('thirty_day_units_p90', 0):.0f}",
-        delta_color="off",
-    )
-    c4.metric("Below break-even", s.get("units_below_break_even", "—"))
+    c1.metric("🔮 Expected vehicles sold (P50)", f"{(k['sold_p50'] or 0):.0f}",
+              (f"range {k['sold_p10']:.0f}–{k['sold_p90']:.0f}" if k.get("sold_p10") is not None else ""),
+              delta_color="off")
+    c2.metric("💵 Expected revenue (P50)", _money(k["revenue_p50"]),
+              (f"downside {_money(k['revenue_p10'])}" if k.get("revenue_p10") is not None else ""),
+              delta_color="off")
+    c3.metric("💰 Expected front-end gross (P50)", _money(k["gross_p50"]))
+    c4.metric("📊 Expected lot capacity used (P50)", f"{(k['capacity_used_p50'] or 0):.0%}")
 
-    _render_warnings(response)
+    if k.get("below_target_prob"):
+        # _money already escapes '$' for markdown — don't wrap it in md() again (double-escape).
+        st.markdown(f"**{k['below_target_prob']:.0%}** chance revenue falls below the "
+                    f"**{_money(k['revenue_target'])}** target.")
+
+    if k.get("revenue_p50") is not None and k.get("revenue_p10") is not None:
+        ys = [k["revenue_p10"], k["revenue_p50"], k["revenue_p90"]]
+        fig = go.Figure(go.Bar(
+            x=["Downside (P10)", "Expected (P50)", "Conservative (P90)"], y=ys,
+            text=[f"${v:,.0f}" for v in ys], textposition="outside", cliponaxis=False))
+        fig.update_layout(height=260, yaxis_title="Revenue, $", margin=dict(t=24, b=10),
+                          showlegend=False)
+        st.plotly_chart(style_fig(fig))
 
     if response.target_url:
         _open_workflow_link(response.target_url, "Open the full Acquire Inventory analysis →")
+
+
+# --- portfolio follow-up rendering (structured payloads from portfolio_followup) ------
+
+
+def _render_portfolio_followup(payload: dict) -> None:
+    kind = payload.get("kind")
+    if kind == "lot_today":
+        _render_portfolio_lot_today(payload)
+    elif kind == "top_risk":
+        _render_portfolio_top_risk(payload)
+    elif kind == "acquire_review":
+        _render_portfolio_acquire_review(payload)
+
+
+def _render_portfolio_lot_today(p: dict) -> None:
+    from pricing_agent.agents import portfolio_copy as PC
+    st.markdown(md(p["summary"]))
+    k = p["kpis"]
+    c = st.columns(5)
+    c[0].metric("🚗 Units on lot", k.get("units_on_lot", "—"),
+                f"{k.get('open_slots', 0)} open", delta_color="off")
+    util, tgt = k.get("utilization"), k.get("target_utilization")
+    c[1].metric("📊 Utilization", f"{(util or 0):.0%}",
+                (f"{(util - tgt) * 100:+.0f} pts vs {tgt:.0%}" if util is not None and tgt is not None else ""),
+                delta_color="off")
+    c[2].metric("⏳ Over 90 days", k.get("over_90_units", "—"),
+                f"{(k.get('aged_pct') or 0):.0%} of lot", delta_color="off")
+    c[3].metric("💰 Cash tied up", _money(k.get("cash_tied_up")))
+    c[4].metric("🔻 Below break-even", k.get("below_break_even", "—"),
+                _money(k.get("below_break_even_exposure")), delta_color="off")
+
+    inv = _inventory_by_id(AS_OF)
+    rows = []
+    for v in p["vehicles"]:
+        veh = inv.get(v["vehicle_id"], {})
+        dot, label = PC.action_label(v.get("action_code"))
+        rows.append({
+            "Photo": ui_components.thumbnail_uri(veh.get("image_url")),
+            "Suggested action": f"{dot} {label}",
+            "Stock": v["vehicle_id"],
+            "Vehicle": f"{veh.get('year', '')} {veh.get('make', '')} {veh.get('model', '')}".strip(),
+            "Days on lot": veh.get("days_in_inventory"),
+            "Asking price": veh.get("current_list_price"),
+            "Risk": v.get("risk_score"),
+            "Risk of over 90 days": _pct_or_none(v.get("prob_age_over_90")),
+            "Chance of negative value": _pct_or_none(v.get("prob_negative_net_value")),
+        })
+    st.dataframe(
+        pd.DataFrame(rows), hide_index=True,
+        column_config={
+            "Photo": st.column_config.ImageColumn("Photo", width="small"),
+            "Asking price": st.column_config.NumberColumn(format="$%d"),
+            "Risk": st.column_config.ProgressColumn(format="%.0f", min_value=0, max_value=100),
+            "Risk of over 90 days": st.column_config.NumberColumn(format="%.0f%%"),
+            "Chance of negative value": st.column_config.NumberColumn(format="%.0f%%"),
+        },
+    )
+    st.caption("Ranked by risk of remaining unsold too long — time on lot, expected value loss, and "
+               "chance of a negative outcome.")
+
+
+def _pct_or_none(fraction) -> float | None:
+    return None if fraction is None else fraction * 100.0
+
+
+def _render_portfolio_top_risk(p: dict) -> None:
+    from pricing_agent.agents import portfolio_copy as PC
+    st.markdown(md(p["summary"]))
+    inv = _inventory_by_id(AS_OF)
+    for v in p["vehicles"]:
+        veh = inv.get(v["vehicle_id"], {})
+        with st.container(border=True):
+            photo_col, body_col = st.columns([1, 4])
+            path = ui_components.resolve_image(veh.get("image_url"))
+            if path is not None:
+                with photo_col:
+                    try:
+                        components.html(ui_components.vehicle_photo_html(path, height=96), height=104)
+                    except OSError:
+                        pass
+            desc = f"{veh.get('year', '')} {veh.get('make', '')} {veh.get('model', '')}".strip() \
+                or v["vehicle_id"]
+            days = veh.get("days_in_inventory")
+            meta = f"{v['vehicle_id']}" + (f" · {days} days on lot" if days is not None else "")
+            dot, label = PC.action_label(v.get("action_code"))
+            reasons = "  \n".join(f"{PC.reason_icon(f)} {f}" for f in v.get("risk_factors", ()))
+            body_col.markdown(md(
+                f"**{desc}**  ·  {meta}  ·  🎯 **attention score {(v.get('risk_score') or 0):.0f}**  \n"
+                f"{reasons}  \n**Suggested inventory action:** {dot} {label}"))
+
+
+def _render_portfolio_acquire_review(p: dict) -> None:
+    st.markdown(md(p["summary"]))
+    warnings = p.get("warnings", [])
+    if warnings:
+        n = len(warnings)
+        render_review_panel(
+            warnings,
+            heading=f"{n} thing{'s' if n != 1 else ''} to clear before you acquire")
+    if p.get("cta"):
+        st.markdown(md(p["cta"]))
+        _open_workflow_link("improve-aging-inventory", "Open Improve Aging →")
 
 
 def _render_promotion_result(response: AssistantResponse) -> None:

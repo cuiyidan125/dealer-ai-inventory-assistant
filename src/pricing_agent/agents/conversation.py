@@ -40,6 +40,15 @@ PRICING_FOLLOWUP_SOURCES = frozenset({
     SOURCE_PRICING_REASONING,
 })
 
+# Inventory-portfolio (Acquire) conversation turns, each rendered by its own structured payload.
+SOURCE_PORTFOLIO_LOT_TODAY = "portfolio_lot_today"          # "what does my lot look like today?"
+SOURCE_PORTFOLIO_TOP_RISK = "portfolio_top_risk"           # "top N vehicles that need attention"
+SOURCE_PORTFOLIO_ACQUIRE_REVIEW = "portfolio_acquire_review"  # "before I acquire, what to review?"
+
+PORTFOLIO_FOLLOWUP_SOURCES = frozenset({
+    SOURCE_PORTFOLIO_LOT_TODAY, SOURCE_PORTFOLIO_TOP_RISK, SOURCE_PORTFOLIO_ACQUIRE_REVIEW,
+})
+
 RICH_SOURCES = frozenset({SOURCE_FIRST_TURN, SOURCE_RERUN})
 
 
@@ -109,6 +118,10 @@ class ConversationState:
     active_pricing_recommendation: dict | None = None
     selected_pricing_strategy: str | None = None
     last_pricing_followup_kind: str | None = None
+    # --- inventory-portfolio (Acquire) conversation continuity ---------------------------
+    # "outlook" on the first ACQUIRE turn, then "lot_today" / "top_risk" / "acquire_review".
+    # Continuity/testing only — never a business-data source.
+    last_portfolio_followup_kind: str | None = None
 
     # --- history -------------------------------------------------------------------
 
@@ -192,6 +205,10 @@ class ConversationState:
             self.active_pricing_recommendation = None
             self.selected_pricing_strategy = None
             self.last_pricing_followup_kind = None
+
+        # A fresh portfolio forecast opens the Acquire conversation at the 30-day outlook.
+        self.last_portfolio_followup_kind = (
+            "outlook" if self.active_workflow_type == "ACQUIRE_INVENTORY" else None)
 
     def switch_to(self, response) -> None:
         """Switch the active workflow to `response`, preserving the current one in history first.
