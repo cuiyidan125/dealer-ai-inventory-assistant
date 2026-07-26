@@ -226,15 +226,28 @@ def test_a_pricing_first_turn_seeds_a_conversation():
     assert s.active_workflow_type == "PRICE_INVENTORY"
 
 
-def test_followup_on_a_non_aging_first_turn_is_honest_not_fabricated():
+def test_followup_on_a_non_aging_first_turn_is_grounded_not_fabricated():
     s = new_state()
     r = run_assistant("What should I price 2020 Ford F-150 XLT?", as_of=AS_OF)
     s.add_user("q")
     s.add_assistant(r.message, "first_turn", result=r.result, response=r)
     s.adopt_response(r)
     result = handle_followup("Why protect profit?", s, as_of=AS_OF)
-    # Non-aging results have no rich follow-up engine yet: the reply is an honest clarification,
-    # never a fabricated aging-style answer, and it never reran a workflow.
+    # A pricing follow-up now gets a grounded pricing answer (the conversational pricing engine),
+    # never a fabricated aging-style answer, and it never reran or switched workflow.
+    assert result.kind == "pricing_reasoning"
+    assert not result.reran
+    assert s.active_workflow_type == "PRICE_INVENTORY"
+
+
+def test_unmatched_non_aging_followup_still_falls_back_honestly():
+    s = new_state()
+    r = run_assistant("What should I price 2020 Ford F-150 XLT?", as_of=AS_OF)
+    s.add_user("q")
+    s.add_assistant(r.message, "first_turn", result=r.result, response=r)
+    s.adopt_response(r)
+    # A follow-up that matches no pricing beat keeps the honest clarification fallback.
+    result = handle_followup("Does it come with floor mats?", s, as_of=AS_OF)
     assert result.kind == "clarification"
     assert "Single Vehicle Valuation" in result.text
     assert not result.reran

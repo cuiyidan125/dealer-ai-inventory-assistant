@@ -29,6 +29,16 @@ SOURCE_CLARIFICATION = "clarification"
 SOURCE_UNSUPPORTED = "unsupported"
 SOURCE_ERROR = "error"
 SOURCE_SWITCH = "workflow_switch"
+# Single-vehicle pricing conversation turns, each rendered by its own structured payload.
+SOURCE_PRICING_TARGET = "pricing_target"          # "sell it within N days"
+SOURCE_PRICING_STRATEGIES = "pricing_strategies"  # "show me a few strategies"
+SOURCE_PRICING_DETAIL = "pricing_detail"          # "I like Balanced — show the detail"
+SOURCE_PRICING_REASONING = "pricing_reasoning"    # "walk me through your reasoning"
+
+PRICING_FOLLOWUP_SOURCES = frozenset({
+    SOURCE_PRICING_TARGET, SOURCE_PRICING_STRATEGIES, SOURCE_PRICING_DETAIL,
+    SOURCE_PRICING_REASONING,
+})
 
 RICH_SOURCES = frozenset({SOURCE_FIRST_TURN, SOURCE_RERUN})
 
@@ -48,6 +58,9 @@ class ConversationMessage:
     response: object | None = None
     referenced_vehicle_ids: tuple[str, ...] = ()
     referenced_workflow_id: str | None = None
+    # Structured render data for pricing follow-up turns (a plain dict; the view renders it as
+    # cards/tables). None for plain-text turns.
+    payload: dict | None = None
     timestamp: str = field(default_factory=_now)
 
 
@@ -86,6 +99,16 @@ class ConversationState:
     rerun_count: int = 0
     last_referenced_vehicle_ids: tuple[str, ...] = ()
     prior_workflows: list[PriorWorkflow] = field(default_factory=list)
+    # --- single-vehicle pricing conversation memory -------------------------------------
+    # Three deliberately distinct concepts (never conflated):
+    #   baseline  — the first-turn valuation's recommended strategy; never overwritten by a
+    #               day-target exploration.
+    #   active    — the most recently *displayed* recommendation (a day target updates this).
+    #   selected  — the scenario the dealer explicitly chose (set only on selection).
+    baseline_pricing_recommendation: dict | None = None
+    active_pricing_recommendation: dict | None = None
+    selected_pricing_strategy: str | None = None
+    last_pricing_followup_kind: str | None = None
 
     # --- history -------------------------------------------------------------------
 
@@ -95,11 +118,13 @@ class ConversationState:
             role="user", source=SOURCE_USER, text=text, referenced_vehicle_ids=referenced))
 
     def add_assistant(self, text: str, source: str, *, result=None, response=None,
-                      referenced: tuple[str, ...] = (), workflow_id: str | None = None) -> None:
+                      referenced: tuple[str, ...] = (), workflow_id: str | None = None,
+                      payload: dict | None = None) -> None:
         self.last_assistant_response = text
         self.messages.append(ConversationMessage(
             role="assistant", source=source, text=text, result=result, response=response,
-            referenced_vehicle_ids=referenced, referenced_workflow_id=workflow_id))
+            referenced_vehicle_ids=referenced, referenced_workflow_id=workflow_id,
+            payload=payload))
 
     # --- active result -------------------------------------------------------------
 
@@ -151,6 +176,22 @@ class ConversationState:
         self.active_approvals = tuple(result.get("approvals_required", []) if isinstance(result, dict) else [])
         sim = (audit.get("simulation") or {}).get("simulation_id") if isinstance(audit, dict) else None
         self.active_simulation_ids = (sim,) if sim else ()
+
+        # A fresh valuation resets the pricing conversation memory: its recommended strategy becomes
+        # both the baseline and the active recommendation, and any prior selection is cleared. The
+        # pricing follow-up handlers update `active`/`selected` later without ever touching baseline.
+        if self.active_workflow_type == "PRICE_INVENTORY" and isinstance(result, dict):
+            from pricing_agent.agents.pricing_copy import baseline_recommendation
+            rec = baseline_recommendation(result)
+            self.baseline_pricing_recommendation = rec
+            self.active_pricing_recommendation = rec
+            self.selected_pricing_strategy = None
+            self.last_pricing_followup_kind = None
+        else:
+            self.baseline_pricing_recommendation = None
+            self.active_pricing_recommendation = None
+            self.selected_pricing_strategy = None
+            self.last_pricing_followup_kind = None
 
     def switch_to(self, response) -> None:
         """Switch the active workflow to `response`, preserving the current one in history first.
@@ -261,6 +302,11 @@ def resolve_reference(text: str, state: ConversationState) -> ReferenceMatch:
     ids) when a description matches more than one vehicle — the caller then asks, never guesses.
     """
     if not state.has_active_result:
+        return ReferenceMatch((), "", False)
+    # The reference index only exists for an aging result (a cohort of vehicles). From a single-skill
+    # result (e.g. a valuation dict), there is no cohort to resolve against — return empty so the
+    # caller resolves the named vehicle from the text instead of crashing on a missing index.
+    if state.active_workflow_type != "IMPROVE_AGING_INVENTORY":
         return ReferenceMatch((), "", False)
     lowered = text.lower()
     index = vehicle_index(state.active_result)

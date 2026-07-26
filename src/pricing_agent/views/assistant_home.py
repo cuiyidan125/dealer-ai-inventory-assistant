@@ -22,17 +22,23 @@ from __future__ import annotations
 from datetime import datetime, timezone
 from typing import Iterable, NamedTuple
 
+import pandas as pd
 import streamlit as st
 
 from pricing_agent.agents import build_aging_answer, handle_followup, new_state, run_assistant
 from pricing_agent.agents.assistant import AssistantResponse, AssistantState
 from pricing_agent.agents.conversation import (
+    PRICING_FOLLOWUP_SOURCES,
     RICH_SOURCES,
     SOURCE_CLARIFICATION,
     SOURCE_ERROR,
     SOURCE_EXPLANATION,
     SOURCE_FILTERED,
     SOURCE_FIRST_TURN,
+    SOURCE_PRICING_DETAIL,
+    SOURCE_PRICING_REASONING,
+    SOURCE_PRICING_STRATEGIES,
+    SOURCE_PRICING_TARGET,
     SOURCE_RERUN,
     SOURCE_SWITCH,
     SOURCE_UNSUPPORTED,
@@ -64,6 +70,10 @@ _PROVENANCE = {
     SOURCE_ERROR: "⚠️ Kept your previous analysis",
     SOURCE_RERUN: "🔄 Re-ran the analysis",
     SOURCE_SWITCH: "🔀 Switched workflow",
+    SOURCE_PRICING_TARGET: "🎯 Re-targeted for a faster sale",
+    SOURCE_PRICING_STRATEGIES: "📊 Pricing strategies compared",
+    SOURCE_PRICING_DETAIL: "🧾 Selected strategy — detail",
+    SOURCE_PRICING_REASONING: "🧭 Reasoning",
 }
 
 # Read by the Price Inventory view to preselect the routed vehicle.
@@ -250,6 +260,9 @@ def _render_conversation(conversation) -> None:
                 st.caption(_PROVENANCE[SOURCE_SWITCH])
                 st.markdown(md(message.text))
                 _render_workflow_result(message.response)
+            elif message.source in PRICING_FOLLOWUP_SOURCES and message.payload is not None:
+                st.caption(_PROVENANCE.get(message.source, ""))
+                _render_pricing_followup(message.payload)
             else:
                 caption = _PROVENANCE.get(message.source)
                 if caption:
@@ -519,11 +532,126 @@ def _render_pricing_result(response: AssistantResponse) -> None:
         "Every figure is read from the analysis — the assistant computes nothing."
     )
 
+    # Advisor WHY — reads like an inventory advisor, not a calculator. Built from stored fields.
+    if isinstance(response.result, dict):
+        from pricing_agent.agents import pricing_copy as PC
+        why = PC.first_turn_why(response.result)
+        if why:
+            st.markdown("**Why this price**")
+            for bullet in why:
+                st.markdown(md(f"- {bullet}"))
+
     _render_warnings(response)
 
     if response.target_url:
         _open_workflow_link(response.target_url, "Open the full Price Inventory analysis →")
         st.caption("Opens the workspace with this vehicle already selected.")
+
+
+# --- pricing follow-up rendering (structured payloads from pricing_followup) -----------
+
+
+def _render_pricing_followup(payload: dict) -> None:
+    kind = payload.get("kind")
+    if kind == "target":
+        _render_pricing_target(payload)
+    elif kind == "strategies":
+        _render_pricing_strategies(payload)
+    elif kind == "detail":
+        _render_pricing_detail(payload)
+    elif kind == "reasoning":
+        _render_pricing_reasoning(payload)
+
+
+def _render_pricing_target(p: dict) -> None:
+    if p.get("no_rung"):
+        st.warning("I can't model a safe price for that target — the price floor binds, so I've "
+                   "kept the current recommendation.", icon="⚠️")
+        return
+    prev, tgt = p["previous"], p["target"]
+    if p["reached"]:
+        st.markdown(md(
+            f"To give the best chance of selling within **~{p['target_days']} days**, I'd move to "
+            f"**{_money(tgt['price'])}**. This is the *minimum discount* — the least aggressive safe "
+            "price change currently modeled that reaches your target."))
+    else:
+        st.markdown(md(
+            f"The requested **~{p['target_days']} days** can't be reached within the safe price "
+            f"floor. The fastest safe price is **{_money(tgt['price'])}** at about "
+            f"**{tgt['p50_days']:.0f} days** — the pricing floor prevents going faster."))
+
+    c1, c2, c3 = st.columns(3)
+    c1.metric("Previous price", _money(prev.get("price")),
+              f"{prev.get('p50_days', 0):.0f} days (P50)", delta_color="off")
+    c2.metric("Target price", _money(tgt["price"]),
+              f"{tgt['p50_days']:.0f} days (P50)", delta_color="off")
+    dprice = p.get("price_change")
+    dgd = p.get("days_change")
+    c3.metric("Change", _money(dprice) if dprice is not None else "—",
+              (f"{dgd:+.0f} days" if dgd is not None else ""), delta_color="off")
+
+    c4, c5 = st.columns(2)
+    c4.metric("Expected net economic value", _money(tgt.get("net_economic_value")),
+              "after holding, depreciation & slot cost", delta_color="off")
+    c5.metric("Downside protection", _money(p.get("cushion_above_break_even")),
+              f"above {_money(p.get('break_even_price'))} break-even", delta_color="off")
+
+    if p.get("material_compression"):
+        st.warning("The faster target materially reduces expected net value and leaves less "
+                   "downside protection above break-even.", icon="⚠️")
+    st.caption(md(f"_{p.get('note', '')}_  The baseline recommendation is unchanged; this is an "
+                 "exploration."))
+
+
+def _render_pricing_strategies(p: dict) -> None:
+    st.markdown("**Three pricing strategies**")
+    rows = []
+    for m in p["rows"]:
+        rows.append({
+            "Strategy": m["label"],
+            "Recommended price": _money(m["proposed_list_price"]),
+            "Expected days (P50)": f"{(m['p50_days'] or 0):.0f}",
+            "Expected gross (P50)": _money(m["p50_gross"]),
+            "Pros": m["pros"],
+            "Cons": m["cons"],
+        })
+    st.dataframe(pd.DataFrame(rows), hide_index=True)
+    st.caption(md(p.get("summary", "")))
+
+
+def _render_pricing_detail(p: dict) -> None:
+    st.success(p["notice"], icon="🧾")
+    m = p["metrics"]
+    c1, c2, c3 = st.columns(3)
+    c1.metric("Current asking price", _money(m.get("current_list_price")))
+    c2.metric("Recommended price", _money(m.get("recommended_price")))
+    c3.metric("Break-even price", _money(m.get("break_even_price")))
+    c4, c5, c6 = st.columns(3)
+    c4.metric("Expected front-end gross (P50)", _money(m.get("p50_gross")))
+    c5.metric("Expected holding cost (P50)", _money(m.get("p50_holding_cost")))
+    c6.metric("Expected depreciation (P50)", _money(m.get("p50_depreciation")))
+    c7, c8, c9 = st.columns(3)
+    c7.metric("Expected days to sale (P50)", f"{(m.get('p50_days') or 0):.0f}",
+              f"Conservative (P90) {(m.get('p90_days') or 0):.0f}", delta_color="off")
+    rating = str(m.get("deal_rating") or "").title()
+    pct = m.get("market_percentile")
+    c8.metric("Market position", rating or "—",
+              (f"{int(pct)}th percentile" if pct is not None else ""), delta_color="off")
+    conf = m.get("confidence_level")
+    score = m.get("confidence_score")
+    c9.metric("Confidence", str(conf).title() if conf else "—",
+              (f"score {score:.0f}" if isinstance(score, (int, float)) else ""), delta_color="off")
+
+    for bullet in p.get("why", []):
+        st.markdown(md(f"- {bullet}"))
+
+
+def _render_pricing_reasoning(p: dict) -> None:
+    st.markdown(f"**Why {p.get('label', 'this strategy')} — my reasoning**")
+    for i, (title, body) in enumerate(p.get("steps", []), start=1):
+        st.markdown(md(f"**Step {i} · {title}**  \n{body}"))
+    with st.container(border=True):
+        st.markdown(f"**Next checkpoint**  \n{md(p.get('next_checkpoint', ''))}")
 
 
 def _render_portfolio_result(response: AssistantResponse) -> None:
