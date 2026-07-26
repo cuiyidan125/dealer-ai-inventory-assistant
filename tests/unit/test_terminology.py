@@ -111,10 +111,14 @@ def test_table_columns_have_no_snake_case(name):
 
 
 def test_raw_reason_codes_remain_available_in_audit():
-    # Every view that shows reasons keeps a "View technical reason codes" expander.
+    # The raw reason-code expander now lives once in the shared review panel, which every
+    # warnings-bearing view renders through. Assert the expander exists at that single source,
+    # and that each of those views routes its warnings through the shared panel.
+    panel_src = (VIEWS / "review_panel.py").read_text(encoding="utf-8")
+    assert "View technical reason codes" in panel_src, "the shared review panel lost its audit expander"
     for name in ("vehicle_detail.py", "dashboard.py", "promotion.py", "improve_aging.py"):
         src = (VIEWS / name).read_text(encoding="utf-8")
-        assert "View technical reason codes" in src, f"{name} lost its audit reason-code expander"
+        assert "render_review_panel" in src, f"{name} no longer surfaces warnings via the shared panel"
 
 
 # --- 9–14. business-before-P and P-definitions ---------------------------------------

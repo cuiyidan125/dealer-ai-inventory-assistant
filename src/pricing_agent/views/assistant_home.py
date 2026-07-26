@@ -38,6 +38,7 @@ from pricing_agent.agents.conversation import (
     SOURCE_UNSUPPORTED,
 )
 from pricing_agent.views import terminology as T
+from pricing_agent.views.review_panel import severity_dot
 from pricing_agent.workflows.context import WorkflowContext
 from pricing_agent.workflows.pages import page_for
 
@@ -608,10 +609,11 @@ def _render_warnings(response: AssistantResponse) -> None:
         return
     with st.expander(f"Top warnings ({len(response.warnings)})"):
         for warning in response.warnings:
-            st.markdown(
-                f"- **{warning.get('code')}** ({warning.get('severity')}) — "
-                f"{str(warning.get('message', '')).replace('$', chr(92) + '$')}"
-            )
+            dot = severity_dot(warning.get("severity"))
+            st.markdown(md(
+                f"{dot} **{T.warning_label(warning.get('code', ''))}** — "
+                f"{warning.get('message', '')}"
+            ))
 
 
 def _render_route_detail(response: AssistantResponse) -> None:

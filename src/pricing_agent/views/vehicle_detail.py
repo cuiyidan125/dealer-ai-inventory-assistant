@@ -23,6 +23,7 @@ from pricing_agent.policy.price_floor import can_publish
 from pricing_agent.skills.single_vehicle import analyze
 from pricing_agent.views import terminology as T
 from pricing_agent.views.glossary import render_glossary
+from pricing_agent.views.review_panel import render_review_panel
 from pricing_agent.views.style import style_fig
 from pricing_agent.views.workflow_copy import render_workflow_header
 from pricing_agent.workflows.context import WorkflowContext
@@ -30,15 +31,6 @@ from pricing_agent.workflows.context import WorkflowContext
 import ui_components
 
 AS_OF = datetime(2026, 7, 29, 14, 0, tzinfo=timezone.utc)
-
-SEVERITY_STYLE = {
-    "BLOCKING": ("🚫", "error"),
-    "CRITICAL": ("🔴", "error"),
-    "HIGH": ("🟠", "warning"),
-    "MEDIUM": ("🟡", "warning"),
-    "LOW": ("⚪", "info"),
-    "INFO": ("ℹ️", "info"),
-}
 
 
 def md(text: str) -> str:
@@ -286,21 +278,16 @@ def render_vehicle_detail(workflow_context: WorkflowContext | None = None) -> No
     # --- warnings ---------------------------------------------------------------------
 
     if result["warnings"]:
-        st.subheader("What to review before changing the price")
-        for warning in result["warnings"]:
-            icon, kind = SEVERITY_STYLE.get(warning["severity"], ("•", "info"))
-            margin = ""
-            if warning["observed"] is not None and warning["threshold"] is not None:
-                margin = (
-                    f"  \nObserved **{warning['observed']:,.2f}** against a limit of "
-                    f"**{warning['threshold']:,.2f}** ({warning['unit'].lower()})."
-                )
-            body = f"{icon} **{T.warning_label(warning['code'])}**  \n{warning['message']}{margin}"
-            if warning["remediation"]:
-                body += f"  \n_{warning['remediation']}_"
-            getattr(st, kind)(md(body))
-        with st.expander("View technical reason codes"):
-            st.caption("Warning codes: " + ", ".join(f"`{w['code']}`" for w in result["warnings"]))
+        def _observed_vs_threshold(w: dict) -> str | None:
+            if w.get("observed") is not None and w.get("threshold") is not None:
+                return (f"Observed {w['observed']:,.2f} against a limit of "
+                        f"{w['threshold']:,.2f} ({w['unit'].lower()}).")
+            return None
+        render_review_panel(
+            result["warnings"],
+            heading="What to review before changing the price",
+            detail_fn=_observed_vs_threshold,
+        )
 
     if result["approvals_required"]:
         kinds = [a["approval_type"] for a in result["approvals_required"]]

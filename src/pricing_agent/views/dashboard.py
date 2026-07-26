@@ -21,6 +21,7 @@ from pricing_agent.mcp_clients import MockTransport, VautoClient
 from pricing_agent.skills.inventory_portfolio import analyze
 from pricing_agent.views import terminology as T
 from pricing_agent.views.glossary import render_glossary
+from pricing_agent.views.review_panel import render_review_panel
 from pricing_agent.views.style import style_fig
 from pricing_agent.views.workflow_copy import render_workflow_header
 from pricing_agent.workflows.context import WorkflowContext
@@ -63,26 +64,6 @@ ACTION_LABEL = {
     "INCREASE_PRICE": "🟢 Raise price",
     "RETAIN_PRICE": "🟢 Hold price",
 }
-
-# A small severity dot per row, so the review panel conveys priority without three full-bleed
-# alert banners — which read as an error state ("is the site broken?") rather than a checklist.
-_SEVERITY_DOT = {
-    "BLOCKING": "🔴", "CRITICAL": "🔴", "HIGH": "🟠", "MEDIUM": "🟡", "LOW": "🔵", "INFO": "🔵",
-}
-
-
-def _render_review_panel(warnings: list[dict]) -> None:
-    """One calm, bordered panel listing the things worth a look, each with a severity dot and a
-    muted remediation line — instead of a stack of coloured alert boxes."""
-    n = len(warnings)
-    with st.container(border=True):
-        st.markdown(f"**{n} thing{'s' if n != 1 else ''} to review before you acquire**")
-        for w in warnings:
-            dot = _SEVERITY_DOT.get(w["severity"], "🟠")
-            st.markdown(md(f"{dot} **{T.warning_label(w['code'])}** — {w['message']}"))
-            st.caption(md(w["remediation"]))
-        with st.expander("View technical reason codes"):
-            st.caption("Warning codes: " + ", ".join(f"`{w['code']}`" for w in warnings))
 
 
 def render_dashboard(workflow_context: WorkflowContext | None = None) -> None:
@@ -158,7 +139,10 @@ def render_dashboard(workflow_context: WorkflowContext | None = None) -> None:
 
     shown = [w for w in result["warnings"] if w["severity"] in ("BLOCKING", "CRITICAL", "HIGH")]
     if shown:
-        _render_review_panel(shown)
+        render_review_panel(
+            shown,
+            heading=f"{len(shown)} thing{'s' if len(shown) != 1 else ''} to review before you acquire",
+        )
 
     st.caption("Your lot today, and what it looks like over the next 30 and 90 days.")
     lot_tab, forecast_tab, risk_tab = st.tabs(
@@ -298,11 +282,8 @@ def render_dashboard(workflow_context: WorkflowContext | None = None) -> None:
                     )
                 ))
 
-        st.subheader("All alerts")
-        for warning in result["warnings"]:
-            st.markdown(md(f"**{T.warning_label(warning['code'])}** — {warning['message']}"))
-        with st.expander("View technical reason codes"):
-            st.caption("Warning codes: " + ", ".join(f"`{w['code']}`" for w in result["warnings"]))
+        if result["warnings"]:
+            render_review_panel(result["warnings"], heading="All alerts")
 
         with st.expander("Data coverage and audit"):
             st.json(result["data_coverage"])
