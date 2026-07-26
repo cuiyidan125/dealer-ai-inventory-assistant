@@ -41,12 +41,14 @@ PRICING_FOLLOWUP_SOURCES = frozenset({
 })
 
 # Inventory-portfolio (Acquire) conversation turns, each rendered by its own structured payload.
+SOURCE_PORTFOLIO_OUTLOOK = "portfolio_outlook"             # "what will my inventory look like in 30 days?"
 SOURCE_PORTFOLIO_LOT_TODAY = "portfolio_lot_today"          # "what does my lot look like today?"
 SOURCE_PORTFOLIO_TOP_RISK = "portfolio_top_risk"           # "top N vehicles that need attention"
 SOURCE_PORTFOLIO_ACQUIRE_REVIEW = "portfolio_acquire_review"  # "before I acquire, what to review?"
 
 PORTFOLIO_FOLLOWUP_SOURCES = frozenset({
-    SOURCE_PORTFOLIO_LOT_TODAY, SOURCE_PORTFOLIO_TOP_RISK, SOURCE_PORTFOLIO_ACQUIRE_REVIEW,
+    SOURCE_PORTFOLIO_OUTLOOK, SOURCE_PORTFOLIO_LOT_TODAY, SOURCE_PORTFOLIO_TOP_RISK,
+    SOURCE_PORTFOLIO_ACQUIRE_REVIEW,
 })
 
 RICH_SOURCES = frozenset({SOURCE_FIRST_TURN, SOURCE_RERUN})

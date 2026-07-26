@@ -65,6 +65,24 @@ def test_three_follow_ups_route_to_their_kind(convo):
     assert handle_followup(P3, s, as_of=AS_OF).kind == "portfolio_acquire_review"
 
 
+def test_lot_today_can_open_the_conversation():
+    # The demo now opens on today's lot; that question must still route to the portfolio workflow.
+    r = run_assistant(P1, as_of=AS_OF)
+    assert r.workflow.name == "ACQUIRE_INVENTORY"
+
+
+def test_outlook_is_a_follow_up_and_distinct_from_lot_today(convo):
+    from pricing_agent.agents.portfolio_followup import classify
+    s, _ = convo
+    assert classify(P1, s) == "lot_today"                           # "…look like today?"
+    assert classify(P0, s) == "outlook"                             # "…next 30 days?"
+    assert classify("show me the 90-day forecast", s) == "outlook"
+    r = handle_followup(P0, s, as_of=AS_OF)
+    assert r.kind == "portfolio_outlook"
+    assert r.payload["kpis"]["revenue_p50"] is not None
+    assert s.last_portfolio_followup_kind == "outlook"
+
+
 # --- 4-7. top-risk selection ----------------------------------------------------------
 
 
