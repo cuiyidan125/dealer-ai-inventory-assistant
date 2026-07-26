@@ -104,12 +104,12 @@ h3 { margin-top: 1.0rem; }
   border: 2px solid #F1C7B4 !important;
   background: var(--v-surface) !important;
   border-radius: 14px !important;
-  box-shadow: 0 3px 16px rgba(238,90,42,.12);
-  transition: border-color .15s ease, box-shadow .15s ease;
+  box-shadow: 0 3px 16px rgba(238,90,42,.10);
+  transition: border-color .15s ease;
 }
+/* Focus: just deepen the border to solid orange — no glow ring, which doubled the edge. */
 .st-key-assistant_input div:has(> textarea):focus-within {
   border-color: var(--v-orange) !important;
-  box-shadow: 0 0 0 4px rgba(238,90,42,.16);
 }
 .st-key-assistant_input textarea { font-size: 1.06rem !important; }
 .st-key-assistant_input textarea::placeholder { color: #B6A89C; }
