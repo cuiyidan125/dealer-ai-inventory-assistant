@@ -96,6 +96,23 @@ h3 { margin-top: 1.0rem; }
 
 /* Dataframes: rounded frame so tables match the cards. */
 [data-testid="stDataFrame"] { border-radius: 12px; overflow: hidden; border: 1px solid var(--v-border); }
+
+/* Hero assistant input: the page's primary call to action, made unmistakable — a warm surface,
+   a confident orange-tinted border, and a clear focus ring, rather than a faint grey box. */
+.st-key-assistant_input label p { font-size: 1.05rem; font-weight: 700; color: var(--v-ink); }
+.st-key-assistant_input div:has(> textarea) {
+  border: 2px solid #F1C7B4 !important;
+  background: var(--v-surface) !important;
+  border-radius: 14px !important;
+  box-shadow: 0 3px 16px rgba(238,90,42,.12);
+  transition: border-color .15s ease, box-shadow .15s ease;
+}
+.st-key-assistant_input div:has(> textarea):focus-within {
+  border-color: var(--v-orange) !important;
+  box-shadow: 0 0 0 4px rgba(238,90,42,.16);
+}
+.st-key-assistant_input textarea { font-size: 1.06rem !important; }
+.st-key-assistant_input textarea::placeholder { color: #B6A89C; }
 </style>
 """
 
