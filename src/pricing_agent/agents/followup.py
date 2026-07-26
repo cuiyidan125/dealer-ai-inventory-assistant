@@ -125,6 +125,7 @@ class FollowupResult:
     reran: bool = False
     success: bool = True
     response: object | None = None      # a new AssistantResponse when a rerun succeeded
+    payload: dict | None = None         # structured render data for pricing follow-up turns
 
 
 # --- entry point ------------------------------------------------------------------
@@ -155,7 +156,15 @@ def handle_followup(text: str, state: ConversationState, *, as_of: datetime) -> 
     # never forced into the active aging result just because the vehicle appears there.
     routed = detect_new_workflow(text, state)
     if routed is not None:
-        return _record(state, _switch_workflow(text, state, routed, as_of))
+        # A genuine switch takes precedence — *unless* we're in a pricing conversation and the
+        # message is a clear pricing follow-up about the current car. That yields the switch, so a
+        # re-target like "sell it within 20 days" isn't mis-routed by a coarse "…30 days…" cue.
+        pricing_followup_here = False
+        if state.active_workflow_type == "PRICE_INVENTORY":
+            from pricing_agent.agents.pricing_followup import classify as _pricing_classify
+            pricing_followup_here = _pricing_classify(text, state) is not None
+        if not pricing_followup_here:
+            return _record(state, _switch_workflow(text, state, routed, as_of))
 
     if state.active_workflow_type == "IMPROVE_AGING_INVENTORY":
         handlers = (_rerun, _clarification, _filter, _explain)
@@ -165,7 +174,15 @@ def handle_followup(text: str, state: ConversationState, *, as_of: datetime) -> 
                 return _record(state, result)
         return _record(state, _fallback(state))
 
-    # Active workflow is not the multi-turn aging result (e.g. a valuation the user switched to).
+    if state.active_workflow_type == "PRICE_INVENTORY":
+        # Lazy import breaks the followup <-> pricing_followup cycle (pricing_followup imports
+        # FollowupResult from this module).
+        from pricing_agent.agents.pricing_followup import handle_pricing_followup
+        priced = handle_pricing_followup(text, state, as_of=as_of)
+        if priced is not None:
+            return _record(state, priced)
+
+    # Active workflow is not the multi-turn aging result and no pricing handler matched.
     return _record(state, _non_aging_followup(state))
 
 
@@ -197,7 +214,7 @@ def _record(state: ConversationState, result: FollowupResult) -> FollowupResult:
     else:
         state.pending_clarification = None
     state.add_assistant(result.text, result.kind, referenced=result.referenced_ids,
-                        workflow_id=state.active_workflow_id)
+                        workflow_id=state.active_workflow_id, payload=result.payload)
     return result
 
 
