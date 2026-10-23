@@ -9,7 +9,7 @@ preserves human approval, and keeps the evidence and audit trail behind every re
 guiding idea: **AI as an agent service, not another dashboard.**
 
 > This is an independent prototype built with synthetic data and mock integrations. It is **not**
-> a production Cox Automotive or vAuto product, and its outputs must not be used for real dealer
+> a production product of any dealer-software vendor, and its outputs must not be used for real dealer
 > pricing decisions.
 
 ---
@@ -311,8 +311,8 @@ More: [`docs/improve-aging-count-reconciliation-results.md`](docs/improve-aging-
 - **MCP integrations are mocked.** MCP is the pattern an enterprise assistant would use to call
   existing pricing, inventory, market-data, and workflow services; here those calls are served from
   local fixtures under [`mocks/`](mocks/).
-- **No live data** from Cox, vAuto, KBB, Autotrader, a DMS, a dealership, consumers, leads, VDP views,
-  or any transaction is used.
+- **No live data** from a market-data provider, a valuation guide, a listing marketplace, a DMS, a
+  dealership, consumers, leads, VDP views, or any transaction is used.
 - **Outputs must not be used for real dealer pricing decisions.**
 
 **What is demonstrated vs. what production would require:**
@@ -327,7 +327,7 @@ More: [`docs/improve-aging-count-reconciliation-results.md`](docs/improve-aging-
 
 None of the production items above is implemented; they are listed to be explicit about the gap. The
 MCP contract this prototype models is described in
-[`docs/vauto-mcp-contract.md`](docs/vauto-mcp-contract.md).
+[`docs/mcp-contract.md`](docs/mcp-contract.md).
 
 ---
 
@@ -471,6 +471,6 @@ not delivered features.
 ## 17. Disclaimer
 
 This is an **independent prototype**. It runs entirely on **synthetic data** and **mock services**. It
-is **not affiliated with, endorsed by, or connected to** Cox Automotive, vAuto, Kelley Blue Book (KBB),
-or Autotrader. Trademark names appear only to describe the kind of system this prototype models. It is
+is **not affiliated with, endorsed by, or connected to** any dealer-software vendor, market-data
+provider, or automaker. Vehicle makes and models appear only as synthetic sample data. It is
 **not for production pricing or dealer decision-making**.

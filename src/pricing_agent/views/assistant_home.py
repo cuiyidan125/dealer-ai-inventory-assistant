@@ -52,7 +52,7 @@ from pricing_agent.agents.conversation import (
     SOURCE_SWITCH,
     SOURCE_UNSUPPORTED,
 )
-from pricing_agent.mcp_clients import MockTransport, VautoClient
+from pricing_agent.mcp_clients import MockTransport, MarketDataClient
 from pricing_agent.views import terminology as T
 from pricing_agent.views.review_panel import render_review_panel, severity_dot
 from pricing_agent.views.style import style_fig
@@ -679,7 +679,7 @@ def _render_pricing_reasoning(p: dict) -> None:
 def _inventory_by_id(as_of: datetime) -> dict:
     """vehicle_id → static inventory metadata (description, days, price, photo) for presentation
     enrichment only — never a re-run of any analysis."""
-    data = VautoClient(MockTransport(as_of=as_of)).get_dealer_inventory().data or []
+    data = MarketDataClient(MockTransport(as_of=as_of)).get_dealer_inventory().data or []
     return {v["vehicle_id"]: v for v in data}
 
 

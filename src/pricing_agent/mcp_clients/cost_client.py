@@ -1,12 +1,12 @@
 """Internal dealer-systems adapters: cost basis and pricing policy.
 
-docs/vauto-mcp-contract.md §3.1 and §3.5.
+docs/mcp-contract.md §3.1 and §3.5.
 
 `get_dealer_pricing_policy` is a proposed addition, not in product-spec.md §10. §11.9 and
 §11.10 make the policy floor and risk floor two of the four inputs to minimum safe
 transaction price — the central financial-safety control — and no specified tool returns
 them (docs/open-questions.md C1). Both clients live in one module because both are
-internal dealer systems rather than vAuto.
+internal dealer systems rather than the market-data provider.
 """
 
 from __future__ import annotations

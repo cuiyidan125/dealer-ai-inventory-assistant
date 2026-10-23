@@ -1,4 +1,4 @@
-"""Sale event calendar. docs/vauto-mcp-contract.md §3.3.
+"""Sale event calendar. docs/mcp-contract.md §3.3.
 
 `historical_demand_lift` is nullable by design. §26.3 requires both an event with
 validated lift and one without; a null forces the configured default and raises

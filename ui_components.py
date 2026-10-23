@@ -63,7 +63,7 @@ _WINDOWS: dict[str, str] = {
     "VAN": "M34,24 L74,24 L74,38 L34,38 Z M80,24 L120,24 L120,38 L80,38 Z",
 }
 
-# Segment is the vAuto field; body style is what a silhouette needs.
+# Segment is the inventory-feed field; body style is what a silhouette needs.
 _SEGMENT_TO_BODY = {
     "SEDAN": "SEDAN",
     "LUXURY": "SEDAN",
@@ -250,7 +250,7 @@ def aging_timeline(
             base=days_in_inventory,
             orientation="h",
             name="Expected time to sale (P50)",
-            marker=dict(color="rgba(238,90,42,0.9)"),  # vAuto orange: the P50 projection
+            marker=dict(color="rgba(238,90,42,0.9)"),  # accent orange: the P50 projection
             error_x=dict(
                 type="data",
                 symmetric=False,

@@ -133,20 +133,20 @@ system. It must appear in the UI assumptions panel, not be buried in config.
 
 **Ambiguity.** §13.4 steps 6–7 ("compare valuation sources", "calculate a normalized
 market-supported range") define the number every other figure depends on, but state no rule.
-§9.4 gives a principle — vAuto is "one evidence source" — not an algorithm. An undefined rule
+§9.4 gives a principle — the market-data provider is "one evidence source" — not an algorithm. An undefined rule
 here is precisely the gap where an LLM would end up selecting a number, which §4.1 exists to
 prevent.
 
-**Decision — vAuto primary, internal engine as check.**
+**Decision — external market data primary, internal engine as check.**
 
-1. vAuto `market_reference_price` and `recommended_range` anchor the market-supported range.
+1. The provider's `market_reference_price` and `recommended_range` anchor the market-supported range.
 2. The internal comparable-based valuation is computed **independently and always**. It is
-   never skipped when vAuto responds.
-3. `divergence = |internal − vauto| ÷ vauto`
+   never skipped when the provider responds.
+3. `divergence = |internal − external| ÷ external`
    * `> 0.05` → `EXTERNAL_PROVIDER_VARIANCE` at MEDIUM, valuation confidence drops one level
    * `> 0.10` → `EXTERNAL_PROVIDER_VARIANCE` at HIGH, and the published range widens to
      contain both estimates
-4. vAuto unavailable, or stale beyond the §21 threshold → fall back to the internal valuation,
+4. Provider unavailable, or stale beyond the §21 threshold → fall back to the internal valuation,
    emit `EXTERNAL_VALUATION_UNAVAILABLE`, reduce confidence.
 
 Thresholds live in `config/assumptions/valuation.yaml`.
@@ -187,9 +187,9 @@ separately as `reserved_not_inbound`.
 
 **Rejected.** Targeting against effective capacity. Defensible, but "70% utilization" would
 then mean something other than what the general manager said and would not match the figure
-they see in vAuto.
+they see in their inventory tools.
 
-**Touches.** §10.2, §15.4, `docs/vauto-mcp-contract.md`, promotion schemas.
+**Touches.** §10.2, §15.4, `docs/mcp-contract.md`, promotion schemas.
 
 ---
 
@@ -201,7 +201,7 @@ they see in vAuto.
   refused" and never merely "serious".
 * **D8 — Injectable clock.** §21's freshness thresholds would mark every synthetic fixture
   stale on every run. All MCP mocks take an injected `as_of` timestamp, and fixtures declare
-  their age relative to it. This also makes §26.1's "stale vAuto data" scenario deliberate
+  their age relative to it. This also makes §26.1's "stale market data" scenario deliberate
   rather than an artifact of wall-clock drift.
 * **D9 — Repository root.** §25 roots the tree at `used-vehicle-pricing-agent/`. Built at the
   repository root instead, to avoid a redundant nesting level inside `Pricing_demo/`.
@@ -250,7 +250,7 @@ The UI must present them as assumptions, per §27 item 13.
 * event demand-lift multipliers where no history exists
 * dealer performance factor
 * base daily sale hazard and the price-to-market elasticity that scales it
-* internal deal-rating thresholds, where vAuto does not supply its own
+* internal deal-rating thresholds, where the provider does not supply its own
 
 ### C3 — Uncalibrated model relationships
 
@@ -278,8 +278,8 @@ The UI must present them as assumptions, per §27 item 13.
 
 ### C5 — Integration risk
 
-§8.1 already states that the vAuto tools may not exist as public APIs. Everything in
-`docs/vauto-mcp-contract.md` is a **proposed** contract shaped to the specification's stated
-needs, not an observed one. The nine vAuto tools carry differing degrees of plausibility, and
+§8.1 already states that the market-data tools may not exist as public APIs. Everything in
+`docs/mcp-contract.md` is a **proposed** contract shaped to the specification's stated
+needs, not an observed one. The nine market-data tools carry differing degrees of plausibility, and
 `get_shopper_engagement` in particular is the least likely to be available in the assumed form.
 Contract drift is the largest single integration risk in this design.

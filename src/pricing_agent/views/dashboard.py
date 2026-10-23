@@ -17,7 +17,7 @@ import plotly.graph_objects as go
 import streamlit as st
 
 from pricing_agent.config import load_config
-from pricing_agent.mcp_clients import MockTransport, VautoClient
+from pricing_agent.mcp_clients import MockTransport, MarketDataClient
 from pricing_agent.skills.inventory_portfolio import analyze
 from pricing_agent.views import terminology as T
 from pricing_agent.views.glossary import render_glossary
@@ -51,7 +51,7 @@ def portfolio(as_of: datetime, revenue_target: float | None) -> dict:
 
 @st.cache_data(show_spinner=False)
 def inventory(as_of: datetime) -> list[dict]:
-    return VautoClient(MockTransport(as_of=as_of)).get_dealer_inventory().data
+    return MarketDataClient(MockTransport(as_of=as_of)).get_dealer_inventory().data
 
 
 ACTION_LABEL = {

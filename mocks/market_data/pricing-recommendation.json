@@ -7,7 +7,7 @@
           "low": 27600,
           "high": 29300
         },
-        "source_methodology": "VAUTO_MARKET_INDEX_V4",
+        "source_methodology": "MARKET_INDEX_V4",
         "market_position": "AT_MARKET",
         "confidence": "HIGH",
         "effective_date": "2026-07-21",
@@ -19,7 +19,7 @@
           "low": 23400,
           "high": 24900
         },
-        "source_methodology": "VAUTO_MARKET_INDEX_V4",
+        "source_methodology": "MARKET_INDEX_V4",
         "market_position": "ABOVE_MARKET",
         "confidence": "HIGH",
         "effective_date": "2026-07-21",
@@ -31,7 +31,7 @@
           "low": 31100,
           "high": 33400
         },
-        "source_methodology": "VAUTO_MARKET_INDEX_V4",
+        "source_methodology": "MARKET_INDEX_V4",
         "market_position": "AT_MARKET",
         "confidence": "MEDIUM",
         "effective_date": "2026-07-21",
@@ -43,7 +43,7 @@
           "low": 14400,
           "high": 15800
         },
-        "source_methodology": "VAUTO_MARKET_INDEX_V4",
+        "source_methodology": "MARKET_INDEX_V4",
         "market_position": "ABOVE_MARKET",
         "confidence": "MEDIUM",
         "effective_date": "2026-07-21",
@@ -55,7 +55,7 @@
           "low": 23600,
           "high": 26200
         },
-        "source_methodology": "VAUTO_MARKET_INDEX_V4",
+        "source_methodology": "MARKET_INDEX_V4",
         "market_position": "AT_MARKET",
         "confidence": "MEDIUM",
         "effective_date": "2026-07-21",
@@ -67,7 +67,7 @@
           "low": 20300,
           "high": 22500
         },
-        "source_methodology": "VAUTO_MARKET_INDEX_V4",
+        "source_methodology": "MARKET_INDEX_V4",
         "market_position": "AT_MARKET",
         "confidence": "MEDIUM",
         "effective_date": "2026-07-21",
@@ -79,7 +79,7 @@
           "low": 28200,
           "high": 29900
         },
-        "source_methodology": "VAUTO_MARKET_INDEX_V4",
+        "source_methodology": "MARKET_INDEX_V4",
         "market_position": "AT_MARKET",
         "confidence": "HIGH",
         "effective_date": "2026-07-21",
@@ -91,7 +91,7 @@
           "low": 26100,
           "high": 27800
         },
-        "source_methodology": "VAUTO_MARKET_INDEX_V4",
+        "source_methodology": "MARKET_INDEX_V4",
         "market_position": "ABOVE_MARKET",
         "confidence": "HIGH",
         "effective_date": "2026-07-21",
@@ -103,7 +103,7 @@
           "low": 21300,
           "high": 25100
         },
-        "source_methodology": "VAUTO_MARKET_INDEX_V4",
+        "source_methodology": "MARKET_INDEX_V4",
         "market_position": "AT_MARKET",
         "confidence": "LOW",
         "effective_date": "2026-07-21",
@@ -115,7 +115,7 @@
           "low": 35000,
           "high": 37100
         },
-        "source_methodology": "VAUTO_MARKET_INDEX_V4",
+        "source_methodology": "MARKET_INDEX_V4",
         "market_position": "AT_MARKET",
         "confidence": "MEDIUM",
         "effective_date": "2026-07-18",
@@ -127,7 +127,7 @@
           "low": 18400,
           "high": 19700
         },
-        "source_methodology": "VAUTO_MARKET_INDEX_V4",
+        "source_methodology": "MARKET_INDEX_V4",
         "market_position": "AT_MARKET",
         "confidence": "HIGH",
         "effective_date": "2026-07-21",
@@ -139,7 +139,7 @@
           "low": 26000,
           "high": 28300
         },
-        "source_methodology": "VAUTO_MARKET_INDEX_V4",
+        "source_methodology": "MARKET_INDEX_V4",
         "market_position": "ABOVE_MARKET",
         "confidence": "MEDIUM",
         "effective_date": "2026-07-21",
@@ -151,7 +151,7 @@
           "low": 34241,
           "high": 36359
         },
-        "source_methodology": "VAUTO_MARKET_INDEX_V4",
+        "source_methodology": "MARKET_INDEX_V4",
         "market_position": "AT_MARKET",
         "confidence": "HIGH",
         "effective_date": "2026-07-29",
@@ -163,7 +163,7 @@
           "low": 29294,
           "high": 31106
         },
-        "source_methodology": "VAUTO_MARKET_INDEX_V4",
+        "source_methodology": "MARKET_INDEX_V4",
         "market_position": "AT_MARKET",
         "confidence": "HIGH",
         "effective_date": "2026-07-29",
@@ -175,7 +175,7 @@
           "low": 33174,
           "high": 35226
         },
-        "source_methodology": "VAUTO_MARKET_INDEX_V4",
+        "source_methodology": "MARKET_INDEX_V4",
         "market_position": "AT_MARKET",
         "confidence": "HIGH",
         "effective_date": "2026-07-29",
@@ -187,7 +187,7 @@
           "low": 26384,
           "high": 28016
         },
-        "source_methodology": "VAUTO_MARKET_INDEX_V4",
+        "source_methodology": "MARKET_INDEX_V4",
         "market_position": "AT_MARKET",
         "confidence": "HIGH",
         "effective_date": "2026-07-29",
@@ -199,7 +199,7 @@
           "low": 26869,
           "high": 28531
         },
-        "source_methodology": "VAUTO_MARKET_INDEX_V4",
+        "source_methodology": "MARKET_INDEX_V4",
         "market_position": "AT_MARKET",
         "confidence": "HIGH",
         "effective_date": "2026-07-29",
@@ -211,7 +211,7 @@
           "low": 27936,
           "high": 29664
         },
-        "source_methodology": "VAUTO_MARKET_INDEX_V4",
+        "source_methodology": "MARKET_INDEX_V4",
         "market_position": "AT_MARKET",
         "confidence": "HIGH",
         "effective_date": "2026-07-29",
@@ -223,7 +223,7 @@
           "low": 30264,
           "high": 32136
         },
-        "source_methodology": "VAUTO_MARKET_INDEX_V4",
+        "source_methodology": "MARKET_INDEX_V4",
         "market_position": "AT_MARKET",
         "confidence": "HIGH",
         "effective_date": "2026-07-29",
@@ -235,7 +235,7 @@
           "low": 25317,
           "high": 26883
         },
-        "source_methodology": "VAUTO_MARKET_INDEX_V4",
+        "source_methodology": "MARKET_INDEX_V4",
         "market_position": "AT_MARKET",
         "confidence": "HIGH",
         "effective_date": "2026-07-29",
@@ -245,9 +245,9 @@
     "_note": "Per \u00a79.4 and D5 this is treated as ONE evidence source. It anchors the market-supported range, but the internal comparable-based valuation runs independently against it and disagreement above 5% raises EXTERNAL_PROVIDER_VARIANCE."
   },
   "meta": {
-    "source": "VAUTO",
+    "source": "MARKET_DATA",
     "data_timestamp": "2026-07-29T08:00:00Z",
-    "source_version": "vauto-mcp-mock-0.1.0",
+    "source_version": "market-data-mcp-mock-0.1.0",
     "confidence": "MEDIUM",
     "coverage": 1.0,
     "freshness_class": "DAILY"

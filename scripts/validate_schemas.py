@@ -156,9 +156,9 @@ else:
 
 for rel, key in [
     ("dealer_costs/cost-basis.json", "cost_basis"),
-    ("vauto/market-position.json", "positions"),
-    ("vauto/pricing-recommendation.json", "recommendations"),
-    ("vauto/comparables.json", "comparables"),
+    ("market_data/market-position.json", "positions"),
+    ("market_data/pricing-recommendation.json", "recommendations"),
+    ("market_data/comparables.json", "comparables"),
 ]:
     data = fixtures.get(rel, {}).get("data", {}).get(key, {})
     covered = {k for k in data if not k.startswith("_")}

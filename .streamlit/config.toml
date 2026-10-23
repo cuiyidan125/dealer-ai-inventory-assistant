@@ -1,9 +1,9 @@
-# vAuto-inspired theme: orange primary on a clean light surface.
+# Warm theme: orange primary on a clean light surface.
 # This recolors the app's accent (buttons, links, focus, chat send, progress,
 # selected states). It changes no application logic.
 [theme]
 base = "light"
-primaryColor = "#EE5A2A"              # vAuto orange (accent)
+primaryColor = "#EE5A2A"              # accent orange
 backgroundColor = "#FFFFFF"           # clean white page
 secondaryBackgroundColor = "#F5F1EE"  # warm light surface (sidebar, cards, chat bubbles)
 textColor = "#1E1A17"                 # warm near-black text

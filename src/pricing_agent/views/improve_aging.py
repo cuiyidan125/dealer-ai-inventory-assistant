@@ -21,7 +21,7 @@ import pandas as pd
 import streamlit as st
 
 import ui_components
-from pricing_agent.mcp_clients import MockTransport, VautoClient
+from pricing_agent.mcp_clients import MockTransport, MarketDataClient
 from pricing_agent.views import improve_aging_copy as copy
 from pricing_agent.views import terminology as T
 from pricing_agent.views.glossary import render_glossary
@@ -93,7 +93,7 @@ def _run_demo(target: float, event_id: str | None):
 def _inventory_facts(as_of: datetime) -> dict:
     """vehicle_id → static facts (age, price, status) for excluded-vehicle display. A fixture
     read, not a calculation."""
-    data = VautoClient(MockTransport(as_of=as_of)).get_dealer_inventory().data or []
+    data = MarketDataClient(MockTransport(as_of=as_of)).get_dealer_inventory().data or []
     return {v["vehicle_id"]: v for v in data}
 
 

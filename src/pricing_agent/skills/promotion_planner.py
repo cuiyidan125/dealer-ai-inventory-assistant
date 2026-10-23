@@ -33,7 +33,7 @@ from pricing_agent.mcp_clients import (
     EventClient,
     MockTransport,
     PolicyClient,
-    VautoClient,
+    MarketDataClient,
 )
 from pricing_agent.policy import warnings as warnings_mod
 from pricing_agent.simulation import EventWindow, VehicleSimInput, simulate
@@ -56,7 +56,7 @@ def plan_event(
     as_of: date = as_of_dt.date()
     request_id = request_id or f"req_{uuid.uuid4().hex[:12]}"
 
-    vauto = VautoClient(transport)
+    market = MarketDataClient(transport)
     cost = CostClient(transport)
 
     event_response = EventClient(transport).get_event(event_id)
@@ -85,7 +85,7 @@ def plan_event(
     capacity = capacity_position(capacity_raw, inbound)
     policy = PolicyClient(transport).get_dealer_pricing_policy(dealer_id).data or {}
 
-    records, base_inputs = _build(transport, vauto, cost, config, as_of, capacity, window)
+    records, base_inputs = _build(transport, market, cost, config, as_of, capacity, window)
     if not base_inputs:
         raise LookupError("No analyzable vehicles")
 
@@ -240,14 +240,14 @@ def _vid_of(item: VehicleSimInput) -> str:
     return item.vehicle_id.split("@")[0]
 
 
-def _build(transport, vauto, cost, config, as_of, capacity, window):
+def _build(transport, market, cost, config, as_of, capacity, window):
     """Assemble records and simulation inputs for every analyzable vehicle."""
     records: list[dict] = []
     inputs: list[VehicleSimInput] = []
     utilization = capacity["current_utilization"]
     floors = config.pricing["policy_floor"]
 
-    for payload in vauto.get_dealer_inventory().data or []:
+    for payload in market.get_dealer_inventory().data or []:
         vehicle = Vehicle.from_payload(payload)
         vid = vehicle.vehicle_id
         try:
@@ -255,17 +255,17 @@ def _build(transport, vauto, cost, config, as_of, capacity, window):
         except MissingCostBasis:
             continue
 
-        position = vauto.get_vehicle_market_position(vid)
-        velocity = vauto.get_market_sales_velocity(vehicle.segment)
+        position = market.get_vehicle_market_position(vid)
+        velocity = market.get_market_sales_velocity(vehicle.segment)
         if not position.ok or not velocity.ok:
             continue
 
         comparables = valuation_mod.normalize_comparables(
             vehicle.year, vehicle.mileage, vehicle.trim, vehicle.condition,
-            vauto.get_vehicle_comparables(vid).data or [], config,
+            market.get_vehicle_comparables(vid).data or [], config,
         )
         internal = valuation_mod.internal_estimate(comparables, config)
-        engagement = vauto.get_shopper_engagement(vid)
+        engagement = market.get_shopper_engagement(vid)
 
         market_value = float(position.data["market_reference_price"])
         holding = daily_holding_cost(cost_basis.financing_amount, config, utilization)

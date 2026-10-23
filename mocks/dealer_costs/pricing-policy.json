@@ -13,7 +13,7 @@
       "material_gross_reduction_pct": 0.20
     },
     "excluded_from_promotion": ["V-10010"],
-    "_note": "This tool is a PROPOSED addition (docs/vauto-mcp-contract.md §3.5). product-spec.md §11.9 and §11.10 make policy floor and risk floor two of the four inputs to minimum safe transaction price, and no tool in §10 returns them. See docs/open-questions.md C1."
+    "_note": "This tool is a PROPOSED addition (docs/mcp-contract.md §3.5). product-spec.md §11.9 and §11.10 make policy floor and risk floor two of the four inputs to minimum safe transaction price, and no tool in §10 returns them. See docs/open-questions.md C1."
   },
   "meta": {
     "source": "INTERNAL_POLICY",

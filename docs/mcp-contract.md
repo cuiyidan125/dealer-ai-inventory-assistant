@@ -8,7 +8,7 @@ Decisions referenced as **D1**–**D9** are recorded in `docs/open-questions.md`
 ## 0. Status of this contract
 
 Per §8.1, this is a **proposed** integration surface. It is shaped to what the specification
-needs, not to an observed vAuto API. Nothing here should be read as a claim that these
+needs, not to an observed provider API. Nothing here should be read as a claim that these
 endpoints exist in this form.
 
 Plausibility varies by tool, and that variance is itself a design input:
@@ -36,9 +36,9 @@ both depend on it, so it is mandatory rather than conventional.
 {
   "data": { },
   "meta": {
-    "source": "VAUTO | INTERNAL_COST | INTERNAL_CAPACITY | INTERNAL_EVENT | CONFIG",
+    "source": "MARKET_DATA | INTERNAL_COST | INTERNAL_CAPACITY | INTERNAL_EVENT | CONFIG",
     "data_timestamp": "2026-07-29T09:15:00Z",
-    "source_version": "vauto-mcp-0.3.0",
+    "source_version": "market-data-mcp-0.3.0",
     "confidence": "HIGH | MEDIUM | LOW | UNKNOWN",
     "coverage": 0.94,
     "request_id": "req_01J..."
@@ -75,7 +75,7 @@ cost would produce a floor of zero and defeat §4.5.
 
 ---
 
-## 2. vAuto MCP tools
+## 2. Market-data MCP tools
 
 ### 2.1 `get_dealer_inventory`
 
@@ -233,7 +233,7 @@ can replace it.
 
 ## 3. Internal MCP tools
 
-Dealer systems, not vAuto.
+Dealer systems, not the market-data provider.
 
 ### 3.1 `get_vehicle_cost_basis`
 

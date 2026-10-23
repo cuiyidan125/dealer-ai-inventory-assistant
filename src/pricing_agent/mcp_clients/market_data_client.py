@@ -1,6 +1,6 @@
-"""vAuto MCP adapter. Read-only, no business logic.
+"""Market-data MCP adapter. Read-only, no business logic.
 
-Contracts in docs/vauto-mcp-contract.md §2. Per §8.1 these are a *proposed* integration
+Contracts in docs/mcp-contract.md §2. Per §8.1 these are a *proposed* integration
 surface, not an observed API; everything here is served from mocks/.
 
 Comparable normalization deliberately does NOT happen in this client — it belongs to
@@ -12,7 +12,7 @@ from __future__ import annotations
 from pricing_agent.mcp_clients.base import MockTransport, ToolResponse, ToolStatus
 
 
-class VautoClient:
+class MarketDataClient:
     def __init__(self, transport: MockTransport) -> None:
         self._t = transport
 

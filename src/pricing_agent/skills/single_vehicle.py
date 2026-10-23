@@ -38,7 +38,7 @@ from pricing_agent.mcp_clients import (
     MockTransport,
     PolicyClient,
     ToolResponse,
-    VautoClient,
+    MarketDataClient,
 )
 from pricing_agent.policy import approvals, freshness, price_floor
 from pricing_agent.policy import warnings as warnings_mod
@@ -67,11 +67,11 @@ class SingleVehicleContext:
 def _fetch(
     vehicle_id: str, transport: MockTransport, include_capacity: bool = True
 ) -> SingleVehicleContext:
-    vauto = VautoClient(transport)
+    market = MarketDataClient(transport)
     cost = CostClient(transport)
     policy_client = PolicyClient(transport)
 
-    inventory = vauto.get_dealer_inventory()
+    inventory = market.get_dealer_inventory()
     payload = next(
         (v for v in (inventory.data or []) if v["vehicle_id"] == vehicle_id), None
     )
@@ -83,12 +83,12 @@ def _fetch(
     # The one hard stop: without cost basis there is no floor (architecture.md §9).
     cost_basis = CostBasis.from_payload(cost_response.data, vehicle_id)
 
-    position = vauto.get_vehicle_market_position(vehicle_id)
-    recommendation = vauto.get_vehicle_pricing_recommendation(vehicle_id)
-    comparables = vauto.get_vehicle_comparables(vehicle_id)
-    velocity = vauto.get_market_sales_velocity(vehicle.segment)
-    engagement = vauto.get_shopper_engagement(vehicle_id)
-    history = vauto.get_vehicle_price_history(vehicle_id)
+    position = market.get_vehicle_market_position(vehicle_id)
+    recommendation = market.get_vehicle_pricing_recommendation(vehicle_id)
+    comparables = market.get_vehicle_comparables(vehicle_id)
+    velocity = market.get_market_sales_velocity(vehicle.segment)
+    engagement = market.get_shopper_engagement(vehicle_id)
+    history = market.get_vehicle_price_history(vehicle_id)
     policy = policy_client.get_dealer_pricing_policy()
 
     utilization = None

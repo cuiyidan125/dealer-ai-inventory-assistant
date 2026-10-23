@@ -1,5 +1,5 @@
 # Valuation assumptions. See docs/valuation-methodology.md.
-# Implements D5: vAuto primary, internal comparable engine as check.
+# Implements D5: external market data primary, internal comparable engine as check.
 
 comparable_selection:
   max_year_difference: 2

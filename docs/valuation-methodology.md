@@ -1,7 +1,7 @@
 # Valuation Methodology
 
 **Companion to** `docs/product-spec.md` §9.2–§9.4, §11.3, §13.4.
-Implements **D5** — vAuto primary, internal engine as check.
+Implements **D5** — external market data primary, internal engine as check.
 
 ---
 
@@ -14,7 +14,7 @@ the gap where an LLM would end up selecting a price, which §4.1 exists to preve
 
 **The settled rule:**
 
-1. The vAuto reference price and recommended range **anchor** the market-supported range.
+1. The external reference price and recommended range **anchor** the market-supported range.
 2. The internal comparable-based valuation is computed **independently and always**, whenever
    comparables are available. It is never skipped because the external source responded.
 3. Disagreement between them is measured, surfaced, and reduces confidence.

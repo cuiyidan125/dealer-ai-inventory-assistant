@@ -1,7 +1,7 @@
 """Transport shared by every mocked MCP client.
 
 Implements the envelope, freshness classification, and error model in
-docs/vauto-mcp-contract.md §1. Two properties matter beyond plumbing:
+docs/mcp-contract.md §1. Two properties matter beyond plumbing:
 
 * **The clock is injected** (D8). Nothing here reads the wall clock, so the §26.1 stale
   scenario is produced by advancing `as_of` rather than editing a fixture, and every
@@ -83,13 +83,13 @@ _NAMESPACES: Mapping[str, tuple[str, tuple[str, ...]]] = {
     "cost_basis": ("dealer_costs/cost-basis.json", ("cost_basis",)),
     "policy": ("dealer_costs/pricing-policy.json", ()),
     "events": ("events/event-calendar.json", ()),
-    "positions": ("vauto/market-position.json", ("positions",)),
-    "recommendations": ("vauto/pricing-recommendation.json", ("recommendations",)),
-    "comparables": ("vauto/comparables.json", ("comparables",)),
-    "velocity": ("vauto/sales-velocity.json", ()),
-    "engagement": ("vauto/shopper-engagement.json", ("engagement",)),
-    "history": ("vauto/vehicle-history.json", ()),
-    "sales_history": ("vauto/dealer-sales-history.json", ()),
+    "positions": ("market_data/market-position.json", ("positions",)),
+    "recommendations": ("market_data/pricing-recommendation.json", ("recommendations",)),
+    "comparables": ("market_data/comparables.json", ("comparables",)),
+    "velocity": ("market_data/sales-velocity.json", ()),
+    "engagement": ("market_data/shopper-engagement.json", ("engagement",)),
+    "history": ("market_data/vehicle-history.json", ()),
+    "sales_history": ("market_data/dealer-sales-history.json", ()),
 }
 
 _ID_FIELDS = ("vehicle_id", "event_id", "inbound_id", "listing_id")

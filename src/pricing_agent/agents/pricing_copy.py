@@ -3,7 +3,7 @@
 Presentation and selection only. Every figure a builder returns is copied straight from the stored
 `single_vehicle` result (or a `promotional_headroom` ladder rung); nothing here runs a simulation,
 prices a vehicle, or imports the calculation layers. The prose is deterministic templates so it holds
-a consistent "vAuto inventory advisor" tone with or without an API key.
+a consistent "inventory advisor" tone with or without an API key.
 """
 
 from __future__ import annotations

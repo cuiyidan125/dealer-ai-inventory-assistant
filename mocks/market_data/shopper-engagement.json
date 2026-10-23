@@ -11,12 +11,12 @@
       "V-10008": { "listing_views": 612, "vdp_views": 208, "saved_vehicles": 14, "leads": 6,  "calls": 2, "appointments": 2 },
       "V-10012": { "listing_views": 241, "vdp_views": 63,  "saved_vehicles": 2,  "leads": 0,  "calls": 0, "appointments": 0 }
     },
-    "_note_missing": "V-10006, V-10009, V-10010, and V-10011 are deliberately absent. §9.8 requires the agent to continue with reduced confidence when engagement is unavailable, and the hazard model must drop the engagement term rather than substituting a default. No downstream calculation may require this tool -- it is the least likely of the nine vAuto tools to exist in the assumed form."
+    "_note_missing": "V-10006, V-10009, V-10010, and V-10011 are deliberately absent. §9.8 requires the agent to continue with reduced confidence when engagement is unavailable, and the hazard model must drop the engagement term rather than substituting a default. No downstream calculation may require this tool -- it is the least likely of the nine market-data tools to exist in the assumed form."
   },
   "meta": {
-    "source": "VAUTO",
+    "source": "MARKET_DATA",
     "data_timestamp": "2026-07-29T07:30:00Z",
-    "source_version": "vauto-mcp-mock-0.1.0",
+    "source_version": "market-data-mcp-mock-0.1.0",
     "confidence": "LOW",
     "coverage": 0.67,
     "freshness_class": "DAILY"

@@ -116,9 +116,9 @@ if ($inv.inventory_count -ne $vehicleIds.Count) {
 
 $coverageTargets = @(
     @{ File = 'dealer_costs/cost-basis.json';        Key = 'cost_basis' },
-    @{ File = 'vauto/market-position.json';          Key = 'positions' },
-    @{ File = 'vauto/pricing-recommendation.json';   Key = 'recommendations' },
-    @{ File = 'vauto/comparables.json';              Key = 'comparables' }
+    @{ File = 'market_data/market-position.json';          Key = 'positions' },
+    @{ File = 'market_data/pricing-recommendation.json';   Key = 'recommendations' },
+    @{ File = 'market_data/comparables.json';              Key = 'comparables' }
 )
 foreach ($t in $coverageTargets) {
     $node = $fixtures[$t.File].data.($t.Key)

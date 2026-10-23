@@ -12,9 +12,9 @@
     "_note_luxury_ev": "LUXURY and EV carry high supply-to-sales ratios and long medians. Combined with the EV depreciation rate in config/assumptions/depreciation.yaml, V-10005 and V-10006 reach the aging and depreciation warnings without needing contrived inputs."
   },
   "meta": {
-    "source": "VAUTO",
+    "source": "MARKET_DATA",
     "data_timestamp": "2026-07-29T08:00:00Z",
-    "source_version": "vauto-mcp-mock-0.1.0",
+    "source_version": "market-data-mcp-mock-0.1.0",
     "confidence": "MEDIUM",
     "coverage": 1.0,
     "freshness_class": "DAILY"

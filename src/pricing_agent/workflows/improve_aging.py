@@ -28,7 +28,7 @@ from dataclasses import dataclass, field
 from datetime import datetime, timezone
 from enum import Enum
 
-from pricing_agent.mcp_clients import CapacityClient, MockTransport, VautoClient
+from pricing_agent.mcp_clients import CapacityClient, MockTransport, MarketDataClient
 from pricing_agent.skills import inventory_portfolio, promotion_planner, single_vehicle
 from pricing_agent.workflows.candidate_selection import Selection, select_candidates
 
@@ -196,7 +196,7 @@ def run_improve_aging(
     # --- Step 2: candidate selection (no simulation) ----------------------------------
     order.append("CANDIDATE_SELECTION")
     start = _now()
-    inventory = VautoClient(transport).get_dealer_inventory(request.dealer_id).data or []
+    inventory = MarketDataClient(transport).get_dealer_inventory(request.dealer_id).data or []
     inbound = CapacityClient(transport).get_inbound_inventory(request.dealer_id).data or []
     selection = select_candidates(portfolio, inventory, inbound, as_of=as_of)
     # Honour caller exclusions.
