@@ -32,7 +32,7 @@
     "exterior_color": { "type": ["string", "null"] },
     "image_url": {
       "type": ["string", "null"],
-      "description": "Primary merchandising photo. Nullable: the prototype has no image source, and the UI falls back to a generated body-style silhouette rather than a broken image. A real vAuto integration supplies this from the vehicle's merchandising record."
+      "description": "Primary merchandising photo. Nullable: the prototype has no image source, and the UI falls back to a generated body-style silhouette rather than a broken image. A real inventory integration supplies this from the vehicle's merchandising record."
     },
     "drivetrain": { "type": ["string", "null"] },
     "certified": { "type": ["boolean", "null"] },

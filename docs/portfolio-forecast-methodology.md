@@ -44,7 +44,7 @@ Point-in-time, no simulation required (§14.3).
 | --- | --- |
 | `total_cost_basis` | Σ acquisition + transport + recon + auction fee |
 | `total_current_list_value` | Σ current list price |
-| `total_external_market_value` | Σ vAuto reference price (D5 anchor) |
+| `total_external_market_value` | Σ external reference price (D5 anchor) |
 | `total_internal_base_value` | Σ internal comparable estimate, where computable |
 | `total_expected_transaction_value` | Σ P50 transaction price **from draws** |
 | `total_pricing_variance` | list value − external market value |
@@ -130,7 +130,7 @@ current_utilization     = current_inventory ÷ total_physical_slots
 ```
 
 Utilization is always measured against physical slots, matching what the general manager means
-and what vAuto displays. `reserved_slots ⊇ confirmed_inbound` per the MCP contract, so the two
+and what their inventory tools display. `reserved_slots ⊇ confirmed_inbound` per the MCP contract, so the two
 are never both deducted.
 
 ---

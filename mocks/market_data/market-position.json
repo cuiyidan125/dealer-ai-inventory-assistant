@@ -247,9 +247,9 @@
     "_note_v10009": "comparable_count 2 is below min_comparables (5), so the internal check is not computed and LOW_VALUATION_CONFIDENCE is raised."
   },
   "meta": {
-    "source": "VAUTO",
+    "source": "MARKET_DATA",
     "data_timestamp": "2026-07-29T08:00:00Z",
-    "source_version": "vauto-mcp-mock-0.1.0",
+    "source_version": "market-data-mcp-mock-0.1.0",
     "confidence": "MEDIUM",
     "coverage": 1.0,
     "freshness_class": "DAILY"

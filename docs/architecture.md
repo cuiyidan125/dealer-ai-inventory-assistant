@@ -331,8 +331,8 @@ failing closed, except where financial safety requires otherwise.
 
 | Unavailable | Behavior | Warning |
 | --- | --- | --- |
-| vAuto market position / recommendation | Fall back to internal valuation (D5 branch 4) | `EXTERNAL_VALUATION_UNAVAILABLE` |
-| vAuto comparables | Valuation proceeds on external reference price alone; confidence drops to LOW | `LOW_VALUATION_CONFIDENCE` |
+| External market position / recommendation | Fall back to internal valuation (D5 branch 4) | `EXTERNAL_VALUATION_UNAVAILABLE` |
+| External comparables | Valuation proceeds on external reference price alone; confidence drops to LOW | `LOW_VALUATION_CONFIDENCE` |
 | Shopper engagement (§9.8) | Drop the engagement term from the hazard model | reduced confidence, per §9.8 |
 | Cost basis | **Hard stop.** No break-even, no floor, no recommendation | `INSUFFICIENT_VEHICLE_DATA` (BLOCKING) |
 | Dealer capacity | Portfolio and promotion skills unavailable; single-vehicle proceeds | `INCOMPLETE_INVENTORY_DATA` |
@@ -365,7 +365,7 @@ src/
 ├── agents/            deterministic router + resolver + assistant orchestrator (Phase 4),
 │                      extraction, clarification, narration guard
 ├── skills/            one module per skill; orchestration only
-├── mcp_clients/       vauto_client, cost_client, capacity_client, event_client
+├── mcp_clients/       market_data_client, cost_client, capacity_client, event_client
 │                      (read-only) + write_client (isolated, §8)
 ├── domain/            vehicle, valuation, sales_forecast, depreciation,
 │                      holding_cost, break_even, promotion, portfolio, summarize

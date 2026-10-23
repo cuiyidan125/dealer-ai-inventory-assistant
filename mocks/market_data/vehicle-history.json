@@ -431,9 +431,9 @@
     }
   },
   "meta": {
-    "source": "VAUTO",
+    "source": "MARKET_DATA",
     "data_timestamp": "2026-07-29T13:40:00Z",
-    "source_version": "vauto-mcp-mock-0.1.0",
+    "source_version": "market-data-mcp-mock-0.1.0",
     "confidence": "HIGH",
     "coverage": 1.0,
     "freshness_class": "REALTIME"

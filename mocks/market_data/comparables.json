@@ -1636,9 +1636,9 @@
     "_note_v10009": "Only 2 comparables, below min_comparables (5). The internal check must NOT be computed -- a weighted median of two listings is noise presented as a second opinion. Expect LOW_VALUATION_CONFIDENCE and reliance on the external anchor alone."
   },
   "meta": {
-    "source": "VAUTO",
+    "source": "MARKET_DATA",
     "data_timestamp": "2026-07-29T06:00:00Z",
-    "source_version": "vauto-mcp-mock-0.1.0",
+    "source_version": "market-data-mcp-mock-0.1.0",
     "confidence": "MEDIUM",
     "coverage": 1.0,
     "freshness_class": "DAILY"

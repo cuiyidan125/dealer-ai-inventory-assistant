@@ -18,9 +18,9 @@
     "_note_promoted": "Three EVT-SPRING-2026 sales are flagged promoted, with visibly shorter days_to_sale and lower gross than the baseline sales. Comparing promoted against baseline is what makes event lift measurable at all (§26.3)."
   },
   "meta": {
-    "source": "VAUTO",
+    "source": "MARKET_DATA",
     "data_timestamp": "2026-07-28T00:00:00Z",
-    "source_version": "vauto-mcp-mock-0.1.0",
+    "source_version": "market-data-mcp-mock-0.1.0",
     "confidence": "MEDIUM",
     "coverage": 1.0,
     "freshness_class": "VERSIONED"

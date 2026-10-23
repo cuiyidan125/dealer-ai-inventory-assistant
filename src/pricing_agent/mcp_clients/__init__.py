@@ -18,7 +18,7 @@ from pricing_agent.mcp_clients.base import (
 from pricing_agent.mcp_clients.capacity_client import CapacityClient
 from pricing_agent.mcp_clients.cost_client import CostClient, PolicyClient
 from pricing_agent.mcp_clients.event_client import EventClient
-from pricing_agent.mcp_clients.vauto_client import VautoClient
+from pricing_agent.mcp_clients.market_data_client import MarketDataClient
 
 __all__ = [
     "CallRecord",
@@ -26,6 +26,7 @@ __all__ = [
     "CostClient",
     "EventClient",
     "FixtureStore",
+    "MarketDataClient",
     "MockTransport",
     "Mutation",
     "PolicyClient",
@@ -33,5 +34,4 @@ __all__ = [
     "ToolResponse",
     "ToolStatus",
     "ToolUnavailable",
-    "VautoClient",
 ]

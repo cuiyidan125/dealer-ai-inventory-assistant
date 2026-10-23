@@ -1,4 +1,4 @@
-"""Valuation. Implements D5 — vAuto primary, internal comparable engine as check.
+"""Valuation. Implements D5 — external market data primary, internal comparable engine as check.
 
 docs/valuation-methodology.md. The rule in one line: the external source anchors the
 number, the internal estimate always runs beside it, and disagreement widens the range

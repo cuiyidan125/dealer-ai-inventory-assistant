@@ -235,7 +235,7 @@ as one, not a trained model. The architecture is the deliverable; the numbers de
 it.
 
 **"Where does the market value come from?"**
-vAuto anchors it. An independent comparable-based estimate runs alongside every time, and
+External market data anchors it. An independent comparable-based estimate runs alongside every time, and
 disagreement widens the range and lowers confidence — it never silently averages the two.
 
 **"What's the least trustworthy part?"**

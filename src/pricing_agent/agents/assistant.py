@@ -28,7 +28,7 @@ from enum import Enum
 
 from pricing_agent.agents.resolver import MatchResult, MatchStatus, resolve_vehicle
 from pricing_agent.agents.router import RouteResult, route
-from pricing_agent.mcp_clients import EventClient, MockTransport, VautoClient
+from pricing_agent.mcp_clients import EventClient, MockTransport, MarketDataClient
 from pricing_agent.policy.warnings import sort_by_severity
 from pricing_agent.skills import inventory_portfolio, promotion_planner, single_vehicle
 from pricing_agent.workflows.context import WorkflowContext
@@ -244,7 +244,7 @@ def _maybe_advise(text: str, routed: RouteResult, *, as_of: datetime) -> Assista
         return None
     try:
         transport = MockTransport(as_of=as_of)
-        inventory = VautoClient(transport).get_dealer_inventory().data
+        inventory = MarketDataClient(transport).get_dealer_inventory().data
         match = resolve_vehicle(parsed, inventory)
         if match.status is not MatchStatus.EXACT:
             return None
@@ -334,7 +334,7 @@ def _run_pricing(text: str, routed: RouteResult, *, as_of: datetime) -> Assistan
         )
 
     transport = MockTransport(as_of=as_of)
-    inventory = VautoClient(transport).get_dealer_inventory().data
+    inventory = MarketDataClient(transport).get_dealer_inventory().data
     match = resolve_vehicle(parsed, inventory)
 
     if match.status is MatchStatus.EXACT:

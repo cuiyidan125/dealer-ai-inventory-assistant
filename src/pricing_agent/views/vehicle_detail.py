@@ -18,7 +18,7 @@ import streamlit.components.v1 as components
 
 from pricing_agent.agents import extract, intent_of
 from pricing_agent.llm import credentials_present, explain
-from pricing_agent.mcp_clients import MockTransport, VautoClient
+from pricing_agent.mcp_clients import MockTransport, MarketDataClient
 from pricing_agent.policy.price_floor import can_publish
 from pricing_agent.skills.single_vehicle import analyze
 from pricing_agent.views import terminology as T
@@ -48,7 +48,7 @@ def md(text: str) -> str:
 # render call, and the cache would never hit.
 @st.cache_data(show_spinner=False)
 def load_inventory(as_of: datetime) -> list[dict]:
-    return VautoClient(MockTransport(as_of=as_of)).get_dealer_inventory().data
+    return MarketDataClient(MockTransport(as_of=as_of)).get_dealer_inventory().data
 
 
 @st.cache_data(show_spinner=False)

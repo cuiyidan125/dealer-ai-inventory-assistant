@@ -1,7 +1,7 @@
 """One small, tasteful CSS layer applied on every page.
 
 Pure presentation: it changes no application logic and adds no components. It targets Streamlit's
-stable ``data-testid`` hooks to give the default components a designed, vAuto-warm feel — metric
+stable ``data-testid`` hooks to give the default components a designed, warm feel — metric
 cards, bordered containers, buttons, the chat composer, expanders, and heading rhythm. No accent
 stripes or underlines (those read as AI filler); the polish is soft surfaces, rounded corners, and
 gentle shadows on the warm palette already declared in ``.streamlit/config.toml``.
@@ -127,7 +127,7 @@ def inject_css() -> None:
 _CHART_INK = "#1E1A17"
 _CHART_MUTED = "#7C6E63"
 _CHART_GRID = "#EBE2DB"
-# Warm colourway, echoing the vAuto orange. Only touches traces that set no explicit colour,
+# Warm colourway, echoing the accent orange. Only touches traces that set no explicit colour,
 # so the promotion feasibility bars (green/amber by outcome) keep their own meaning.
 _CHART_COLORWAY = ["#EE5A2A", "#E8A33D", "#C2410C", "#B08968", "#7C6E63"]
 

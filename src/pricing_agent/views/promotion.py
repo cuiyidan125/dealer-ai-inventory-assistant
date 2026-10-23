@@ -17,7 +17,7 @@ import plotly.graph_objects as go
 import streamlit as st
 from plotly.subplots import make_subplots
 
-from pricing_agent.mcp_clients import EventClient, MockTransport, VautoClient
+from pricing_agent.mcp_clients import EventClient, MockTransport, MarketDataClient
 from pricing_agent.skills.promotion_planner import plan_event
 from pricing_agent.views import terminology as T
 from pricing_agent.views.glossary import render_glossary
@@ -50,7 +50,7 @@ def plan(as_of: datetime, event_id: str, target: float) -> dict:
 
 @st.cache_data(show_spinner=False)
 def vehicles_by_id(as_of: datetime) -> dict[str, dict]:
-    inventory = VautoClient(MockTransport(as_of=as_of)).get_dealer_inventory().data
+    inventory = MarketDataClient(MockTransport(as_of=as_of)).get_dealer_inventory().data
     return {v["vehicle_id"]: v for v in inventory}
 
 
@@ -210,7 +210,7 @@ def render_promotion_planner(workflow_context: WorkflowContext | None = None) ->
     # each metric compare the three plans on its own terms, with the value printed on every bar.
     order = ("MARGIN_PROTECT", "BALANCED", "CAPACITY_FIRST")
     x_labels = ["Profit<br>protection", "Balanced ★", "Free<br>space"]
-    bar_colors = ["#7A8CA6", "#EE5A2A", "#E8A13C"]  # recommended (Balanced) in vAuto orange
+    bar_colors = ["#7A8CA6", "#EE5A2A", "#E8A13C"]  # recommended (Balanced) in the accent orange
     add_sales = [plans[p]["outcomes"]["incremental_units_sold"]["mean"] for p in order]
     gross = [plans[p]["outcomes"]["total_front_end_gross"]["p50"] for p in order]
     likely = [plans[p]["outcomes"]["probability_target_achieved"] * 100.0 for p in order]

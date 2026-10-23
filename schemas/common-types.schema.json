@@ -85,7 +85,7 @@
       "type": "object",
       "description": "Provenance envelope. Required by §21 freshness checks and §23 audit.",
       "properties": {
-        "source": { "enum": ["VAUTO", "INTERNAL_COST", "INTERNAL_CAPACITY", "INTERNAL_EVENT", "INTERNAL_POLICY", "CONFIG", "USER"] },
+        "source": { "enum": ["MARKET_DATA", "INTERNAL_COST", "INTERNAL_CAPACITY", "INTERNAL_EVENT", "INTERNAL_POLICY", "CONFIG", "USER"] },
         "data_timestamp": { "type": "string", "format": "date-time" },
         "source_version": { "type": "string" },
         "confidence": { "$ref": "#/$defs/confidenceLevel" },

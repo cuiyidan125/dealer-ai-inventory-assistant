@@ -128,7 +128,7 @@
     },
     {
       "id": "SV-09",
-      "name": "Stale vAuto data",
+      "name": "Stale market data",
       "vehicle_id": "V-10010",
       "as_of_override": "2026-07-31T14:00:00Z",
       "mutations": [],

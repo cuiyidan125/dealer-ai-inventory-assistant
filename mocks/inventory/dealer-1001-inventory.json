@@ -409,9 +409,9 @@
     "_note_image_url": "Every vehicle carries a repository-relative image_url, resolved against the repo root rather than the working directory and read from disk so the demo works offline. Licensing and provenance for each file is in assets/vehicles/ATTRIBUTION.md. The generated silhouette in ui_components.py remains the fallback for a record whose image is absent or unreadable."
   },
   "meta": {
-    "source": "VAUTO",
+    "source": "MARKET_DATA",
     "data_timestamp": "2026-07-29T13:40:00Z",
-    "source_version": "vauto-mcp-mock-0.1.0",
+    "source_version": "market-data-mcp-mock-0.1.0",
     "confidence": "HIGH",
     "coverage": 1.0,
     "freshness_class": "REALTIME"

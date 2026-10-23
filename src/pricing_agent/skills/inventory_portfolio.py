@@ -33,7 +33,7 @@ from pricing_agent.mcp_clients import (
     CostClient,
     MockTransport,
     PolicyClient,
-    VautoClient,
+    MarketDataClient,
 )
 from pricing_agent.policy import freshness
 from pricing_agent.policy import warnings as warnings_mod
@@ -57,10 +57,10 @@ def analyze(
     as_of: date = as_of_dt.date()
     request_id = request_id or f"req_{uuid.uuid4().hex[:12]}"
 
-    vauto = VautoClient(transport)
+    market = MarketDataClient(transport)
     cost = CostClient(transport)
 
-    inventory_response = vauto.get_dealer_inventory(dealer_id)
+    inventory_response = market.get_dealer_inventory(dealer_id)
     capacity_response = CapacityClient(transport).get_dealer_capacity(dealer_id)
     inbound_response = CapacityClient(transport).get_inbound_inventory(dealer_id)
     policy_response = PolicyClient(transport).get_dealer_pricing_policy(dealer_id)
@@ -92,15 +92,15 @@ def analyze(
             missing_cost_basis += 1
             continue
 
-        position = vauto.get_vehicle_market_position(vid)
+        position = market.get_vehicle_market_position(vid)
         if not position.ok or not position.data:
             missing_market += 1
             continue
         responses.append(position)
 
-        comparables_response = vauto.get_vehicle_comparables(vid)
-        velocity = vauto.get_market_sales_velocity(vehicle.segment)
-        engagement = vauto.get_shopper_engagement(vid)
+        comparables_response = market.get_vehicle_comparables(vid)
+        velocity = market.get_market_sales_velocity(vehicle.segment)
+        engagement = market.get_shopper_engagement(vid)
         if not velocity.ok:
             continue
 

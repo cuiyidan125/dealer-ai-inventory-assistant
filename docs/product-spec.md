@@ -10,7 +10,7 @@
 
 Build an internal AI agent that helps used-vehicle dealers make explainable, financially responsible pricing and inventory decisions.
 
-The agent converts natural-language requests into validated structured data, retrieves authorized market and inventory information through a vAuto MCP integration, invokes deterministic valuation and forecasting services, and returns:
+The agent converts natural-language requests into validated structured data, retrieves authorized market and inventory information through a market-data MCP integration, invokes deterministic valuation and forecasting services, and returns:
 
 * single-vehicle valuation
 * pricing recommendations
@@ -190,7 +190,7 @@ The MVP will support:
 
 * natural-language vehicle input
 * strict JSON extraction and validation
-* mocked vAuto MCP
+* mocked market-data MCP
 * synthetic dealer inventory
 * single-vehicle valuation
 * three pricing strategies
@@ -208,7 +208,7 @@ The MVP will support:
 ## 5.2 Out of scope for MVP
 
 * automatic retail price publishing
-* production KBB scraping
+* production scraping of third-party valuation sites
 * real consumer credit data
 * autonomous purchasing or disposal
 * trained production sales forecasting
@@ -235,7 +235,7 @@ Skill Router
     └── Dealer Event Promotion Planner Skill
     ↓
 MCP Orchestration Layer
-    ├── vAuto MCP
+    ├── Market-data MCP
     ├── Internal Cost MCP
     ├── Dealer Capacity MCP
     ├── Event Calendar MCP
@@ -376,26 +376,26 @@ Route to:
 
 ---
 
-# 8. vAuto MCP Integration
+# 8. Market-data MCP Integration
 
 ## 8.1 Integration assumption
 
-The vAuto MCP described in this specification is a proposed authorized integration layer.
+The market-data MCP described in this specification is a proposed authorized integration layer.
 
 It may be implemented through:
 
-* vAuto-supported APIs
-* Cox Automotive internal services
+* provider-supported APIs
+* the provider's internal services
 * dealer-authorized data exports
 * enterprise integration middleware
-* a custom MCP adapter around authorized vAuto capabilities
+* a custom MCP adapter around authorized provider capabilities
 
-The system must not assume that all listed tools currently exist as publicly available vAuto APIs.
-For the prototype, use mocked vAuto MCP responses.
+The system must not assume that all listed tools currently exist as publicly available provider APIs.
+For the prototype, use mocked market-data MCP responses.
 
-## 8.2 vAuto MCP responsibilities
+## 8.2 Market-data MCP responsibilities
 
-vAuto MCP should provide authorized access to:
+The market-data MCP should provide authorized access to:
 
 * dealer vehicle inventory
 * current list prices
@@ -409,7 +409,7 @@ vAuto MCP should provide authorized access to:
 * sales velocity indicators
 * shopper engagement, when available
 
-vAuto MCP should not be responsible for:
+The market-data MCP should not be responsible for:
 
 * interpreting free-form user input
 * calculating dealer-specific acquisition cost
@@ -420,7 +420,7 @@ vAuto MCP should not be responsible for:
 
 ---
 
-# 9. Proposed vAuto MCP Tool Contracts
+# 9. Proposed Market-data MCP Tool Contracts
 
 ## 9.1 `get_dealer_inventory`
 
@@ -506,7 +506,7 @@ Return comparable market listings.
 
 ### Purpose
 
-Retrieve any available vAuto pricing recommendation or market-supported range.
+Retrieve any available provider pricing recommendation or market-supported range.
 The internal agent must treat this as one pricing evidence source rather than an unquestionable final answer.
 
 Return:
@@ -584,7 +584,7 @@ Return historical dealer-level sales information required for portfolio forecast
 
 # 10. Internal MCP Tools
 
-The following services may come from dealer systems rather than vAuto.
+The following services may come from dealer systems rather than the market-data provider.
 
 ## 10.1 `get_vehicle_cost_basis`
 
@@ -877,9 +877,9 @@ Preserve:
 The skill must:
 
 1. Normalize vehicle identity.
-2. Retrieve market positioning through vAuto MCP.
+2. Retrieve market positioning through the market-data MCP.
 3. Retrieve comparable vehicles.
-4. Retrieve any available vAuto price recommendation.
+4. Retrieve any available provider price recommendation.
 5. Retrieve internal base value.
 6. Compare valuation sources.
 7. Calculate a normalized market-supported range.
@@ -1708,12 +1708,12 @@ used-vehicle-pricing-agent/
 │   ├── promotion-optimization-methodology.md
 │   ├── fail-safe-policy.md
 │   ├── approval-policy.md
-│   └── vauto-mcp-contract.md
+│   └── mcp-contract.md
 ├── src/
 │   ├── agents/
 │   ├── skills/
 │   ├── mcp_clients/
-│   │   ├── vauto_client.py
+│   │   ├── market_data_client.py
 │   │   ├── cost_client.py
 │   │   ├── capacity_client.py
 │   │   └── event_client.py
@@ -1733,7 +1733,7 @@ used-vehicle-pricing-agent/
 │   │   └── freshness.py
 │   └── simulation/
 ├── mocks/
-│   ├── vauto/
+│   ├── market_data/
 │   ├── dealer_costs/
 │   ├── events/
 │   └── inventory/
@@ -1758,7 +1758,7 @@ used-vehicle-pricing-agent/
 * promotional discount below floor
 * large safe headroom
 * insufficient comparables
-* stale vAuto data
+* stale market data
 * high depreciation EV
 * loss-minimization exception
 
@@ -1794,7 +1794,7 @@ The MVP is complete when:
 
 1. Natural-language requests are converted to schema-valid JSON.
 2. The main agent routes requests to the correct skill.
-3. Mocked vAuto MCP tools return deterministic test data.
+3. Mocked market-data MCP tools return deterministic test data.
 4. Single-vehicle analysis returns valuation, P50/P90 time, financial analysis, and pricing headroom.
 5. Portfolio analysis returns current valuation and 30-day/90-day forecasts.
 6. Promotion planning returns three portfolio plans.
@@ -1815,10 +1815,10 @@ Before writing application code:
 
 1. Create this specification as `docs/product-spec.md`.
 2. Create `docs/architecture.md`.
-3. Create `docs/vauto-mcp-contract.md`.
+3. Create `docs/mcp-contract.md`.
 4. Create the three Skill files.
 5. Create all JSON schemas.
-6. Create mocked vAuto MCP tool contracts.
+6. Create mocked market-data MCP tool contracts.
 7. Create synthetic test scenarios.
 8. Identify unresolved assumptions and missing data.
 9. Run schema validation.

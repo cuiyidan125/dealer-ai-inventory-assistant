@@ -38,7 +38,7 @@ Every vehicle exists to make at least one §26 scenario reachable:
 | `V-10007` 2022 RAV4 XLE | Duplicate of `V-10001` — cannibalization |
 | `V-10008` 2021 Outback | Large safe headroom |
 | `V-10009` 2017 Ram 1500 | Insufficient comparables |
-| `V-10010` 2022 Telluride | Stale vAuto data target |
+| `V-10010` 2022 Telluride | Stale market-data target |
 | `V-10011` 2020 Camry LE | Promotional discount would breach the floor |
 | `V-10012` 2019 Wrangler | 130 days — wholesale and loss-minimization candidate |
 

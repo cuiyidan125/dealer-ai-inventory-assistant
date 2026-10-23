@@ -1,4 +1,4 @@
-"""Dealer capacity and inbound inventory. docs/vauto-mcp-contract.md §3.2 and §3.4.
+"""Dealer capacity and inbound inventory. docs/mcp-contract.md §3.2 and §3.4.
 
 Returns primitives only. `physical_open_slots`, `effective_open_slots`, and the
 utilization figures are derived in domain/portfolio.py — a returned derived field that
